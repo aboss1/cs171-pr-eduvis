@@ -1,5 +1,5 @@
-# cs171-pr-eduvis
-*A comprehensive visualization that allows users to better understand systemic components of the U.S education system*
+# cs171-pr-politivis
+*A comprehensive visualization that allows users to better understand the ramifications of redistricting in 21st century America*
 ###Team Members:
 
 Amanda Boss
