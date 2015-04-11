@@ -51,8 +51,8 @@ var svg = d3.select("body").append("svg")
     .attr("height", height);
 
 queue()
-    .defer(d3.json, "https://www.gist.github.com/mbostock/4090846#file-us-json")
-    .defer(d3.json, "https://www.gist.github.com/mbostock/4090846#file-us-congress-113-json")
+    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/450f6be2e8f3bd969fae0cc7d19db6bde5d614ed/us-congress-113.json")
     .await(ready);
 
 function ready(error, us, congress) {
