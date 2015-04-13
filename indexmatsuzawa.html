@@ -60,8 +60,9 @@ queue()
     .await(ready);
 
 function ready(error, us, congress) {
+  
   g.selectAll("path")
-      .data(topojson.feature(us, us.objects.states).features)
+      .data(topojson.feature(congress, congress.objects.districts).features)
     .enter().append("path")
       .attr("d", path)
       .attr("class", "feature")
