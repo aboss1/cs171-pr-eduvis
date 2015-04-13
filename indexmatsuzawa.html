@@ -1,32 +1,27 @@
+
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
 
-path {
-  stroke-linejoin: round;
-  stroke-linecap: round;
+.background {
+  fill: none;
+  pointer-events: all;
 }
 
-.districts {
-  fill: #bbb;
+.feature {
+  fill: #ccc;
+  cursor: pointer;
 }
 
-.districts :hover {
+.feature.active {
   fill: orange;
 }
 
-.district-boundaries {
-  pointer-events: none;
+.mesh {
   fill: none;
   stroke: #fff;
-  stroke-width: .5px;
-}
-
-.state-boundaries {
-  pointer-events: none;
-  fill: none;
-  stroke: #fff;
-  stroke-width: 1.5px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 </style>
@@ -37,32 +32,12 @@ path {
 <script>
 
 var width = 960,
-    height = 600,
-active = d3.select(null),
-centered;
+    height = 500,
+    active = d3.select(null);
+
 var projection = d3.geo.albersUsa()
-    .scale(1280)
+    .scale(1000)
     .translate([width / 2, height / 2]);
-
-// svg.append("rect")
-//     .attr("class", "background")
-//     .attr("width", width)
-//     .attr("height", height)
-//     .on("click", clicked);
-queue()
-    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/450f6be2e8f3bd969fae0cc7d19db6bde5d614ed/us-congress-113.json")
-    .await(ready);
-
-
-
-function ready(error, us, congress) {
-
-var zoom = d3.behavior.zoom()
-    .translate([0, 0])
-    .scale(1)
-    .scaleExtent([1, 8])
-    .on("zoom", zoomed);
 
 var path = d3.geo.path()
     .projection(projection);
@@ -70,43 +45,36 @@ var path = d3.geo.path()
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
-  //if (error) return console.error(error);
 
- svg.append("rect")
+svg.append("rect")
     .attr("class", "background")
     .attr("width", width)
     .attr("height", height)
-    .on("click", clicked);
+    .on("click", reset);
 
-var g = svg.append("g");
-svg
-    .call(zoom) // delete this line to disable free zooming
-    .call(zoom.event);
+var g = svg.append("g")
+    .style("stroke-width", "1.5px");
+queue()
+    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/450f6be2e8f3bd969fae0cc7d19db6bde5d614ed/us-congress-113.json")
+    .await(ready);
 
-  svg.append("g")
-      .attr("class", "districts")
-      .attr("clip-path", "url(#clip-land)")
-    .selectAll("path")
-      .data(topojson.feature(congress, congress.objects.districts).features)
+function ready(error, us, congress) {
+  g.selectAll("path")
+      .data(topojson.feature(us, us.objects.states).features)
     .enter().append("path")
-      .attr("d", path).on("click", clicked)
-    .append("title")
-      .text(function(d) { return d.id; });
+      .attr("d", path)
+      .attr("class", "feature")
+      .on("click", clicked);
 
-  svg.append("path")
-      .attr("class", "district-boundaries")
-      .datum(topojson.mesh(congress, congress.objects.districts, function(a, b) { return a !== b && (a.id / 1000 | 0) === (b.id / 1000 | 0); }))
-      .attr("d", path);
-
-  svg.append("path")
-      .attr("class", "state-boundaries")
+  g.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .attr("class", "mesh")
       .attr("d", path);
-//}
-d3.select(self.frameElement).style("height", height + "px");
+}
 
 function clicked(d) {
-   if (active.node() === this) return reset();
+  if (active.node() === this) return reset();
   active.classed("active", false);
   active = d3.select(this).classed("active", true);
 
@@ -128,13 +96,9 @@ function reset() {
   active.classed("active", false);
   active = d3.select(null);
 
-  svg.transition()
+  g.transition()
       .duration(750)
-      .call(zoom.translate([0, 0]).scale(1).event);
-}
-function zoomed() {
-  g.style("stroke-width", 1.5 / d3.event.scale + "px");
-  g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-}
+      .style("stroke-width", "1.5px")
+      .attr("transform", "");
 }
 </script>
