@@ -112,7 +112,7 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
  <div id="results"></div>
- <form> <b>Time</b>: 2011<input type="range" name="points" min="2011" max="2013" step="1" value="0" id="slider-time" oninput=";">2013<br></form> 
+ <form> <b>Time</b>: 2003<input type="range" name="points" min="1" max="4" step="1" value="0" id="slider-time" oninput=";">2013<br></form> 
 <script>
 var width = 960,
     height = 600,
@@ -137,14 +137,22 @@ var path = d3.geo.path()
 		 d3.select(this).on("input", function(e){
 			year = document.getElementById("slider-time").value;
 			console.log(year)
-			if(year == 2011)
+			if(year == 1){
+				$("svg").wrapAll().remove();
+				queue()
+    				.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+    				.defer(d3.json, "data/us-congress-108.json")
+					.await(ready);
+				
+			}
+			else if(year == 2)
 			{$("svg").wrapAll().remove(); 
 				queue()
     				.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
     				.defer(d3.json, "data/us-congress-111.json")
    	    				.await(ready);
 	        }
-			else if (year == 2012)
+			else if (year == 3)
 			{$("svg").wrapAll().remove(); 
 				queue()
     			.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
