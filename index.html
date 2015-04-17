@@ -172,7 +172,26 @@ var path = d3.geo.path()
   
 function ready(error, us, congress, stateId) {
   console.log(stateId);
-  console.log(congress);
+  //# of districts = 441
+  console.log(congress.objects.districts.geometries);
+  //check id of district geometries
+    //if id is equal to stateID
+      //assign
+
+  var modifiedData = [];
+  var districts = congress.objects.districts.geometries;
+  for (var c = 0; c<districts.length; c++){
+    var newModifiedData = {};
+    for (var s = 0; s<stateId.length; s++){
+      var districtID = districts[c].id.toString();
+      districtID = districtID.substring(0, districtID.length - 2);
+      if (districtID == stateId[s].id){
+        newModifiedData.stateName = stateId[s].name;
+        modifiedData.push(newModifiedData);
+      }
+    }
+  }
+  console.log(modifiedData);
 	
 	var svg = d3.select("body").append("svg")
     .attr("width", width)
