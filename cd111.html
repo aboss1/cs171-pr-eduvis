@@ -83,11 +83,11 @@ var path = d3.geo.path()
 
 function ready(error, us, congress) {
   if (error) return console.error(error);
-  //svg.exit().remove()
  
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
+	
   svg.append("defs").append("path")
       .attr("id", "land")
       .datum(topojson.feature(us, us.objects.land))
