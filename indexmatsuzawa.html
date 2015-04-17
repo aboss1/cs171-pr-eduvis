@@ -3,21 +3,17 @@
 <meta charset="utf-8">
 <head>
 <style>
-
 .background {
   fill: none;
   pointer-events: all;
 }
-
 .feature {
   fill: #bbb;
   cursor: pointer;
 }
-
 .feature.active {
   fill: orange;
 }
-
 .mesh {
   fill: none;
   stroke: #fff;
@@ -27,18 +23,15 @@
 .districts {
   fill: #bbb;
 }
-
 .districts :hover {
   fill: orange;
 }
-
 .district-boundaries {
   pointer-events: none;
   fill: none;
   stroke: #fff;
   stroke-width: .5px;
 }
-
 .state-boundaries {
   pointer-events: none;
   fill: none;
@@ -70,7 +63,6 @@
         });
        req.execute(callback);
       }
-
       /**
        * Render results in the DOM.
        * @param {Object} response Response object returned by the API.
@@ -104,7 +96,6 @@
               'Could not find polling place for ' + normalizedAddress));
         }
       }
-
       /**
        * Initialize the API client and make a request.
        */
@@ -121,22 +112,18 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
  <div id="results"></div>
- <form> <b>Time</b>: 2011<input type="range" name="points" min="2011" max="2012" step="1" value="0" id="slider-time" oninput=";">2012<br></form> 
+ <form> <b>Time</b>: 2011<input type="range" name="points" min="2011" max="2013" step="1" value="0" id="slider-time" oninput=";">2013<br></form> 
 <script>
-
 var width = 960,
     height = 600,
     active = d3.select(null);
-
 var projection = d3.geo.albersUsa()
     .scale(1280)
     .translate([width / 2, height / 2]);
-
 var path = d3.geo.path()
     .projection(projection);
 	
 	
-
 	
 	
 	
@@ -157,24 +144,29 @@ var path = d3.geo.path()
     				.defer(d3.json, "data/us-congress-111.json")
    	    				.await(ready);
 	        }
-			else
+			else if (year == 2012)
 			{$("svg").wrapAll().remove(); 
 				queue()
     			.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
    				 .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/450f6be2e8f3bd969fae0cc7d19db6bde5d614ed/us-congress-113.json")
     				.await(ready);
 		   }
+		   else{
+			   $("svg").wrapAll().remove(); 
+			   queue()
+    			.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+   				 .defer(d3.json, "data/us-congress-114.json")
+				 .await(ready);
+		   }
 	   })
       }
   }) 
   
-
 function ready(error, us, congress) {
 	
 	var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
-
 	svg.append("rect")
     .attr("class", "background")
     .attr("width", width)
@@ -182,14 +174,12 @@ function ready(error, us, congress) {
     .on("click", reset);
 var g = svg.append("g")
 .style("stroke-width", "1.5px");
-
   g.selectAll("path")
       .data(topojson.feature(congress, congress.objects.districts).features)
     .enter().append("path")
       .attr("d", path)
       .attr("class", "feature")
       .on("click", clicked);
-
   g.append("path")
       .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
       .attr("class", "mesh")
@@ -204,7 +194,6 @@ var g = svg.append("g")
   if (active.node() === this) return reset();
   active.classed("active", false);
   active = d3.select(this).classed("active", true);
-
   var bounds = path.bounds(d),
       dx = bounds[1][0] - bounds[0][0],
       dy = bounds[1][1] - bounds[0][1],
@@ -212,23 +201,18 @@ var g = svg.append("g")
       y = (bounds[0][1] + bounds[1][1]) / 2,
       scale = .9 / Math.max(dx / width, dy / height),
       translate = [width / 2 - scale * x, height / 2 - scale * y];
-
   g.transition()
       .duration(750)
       .style("stroke-width", 1.5 / scale + "px")
       .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 }
-
 function reset() {
   active.classed("active", false);
   active = d3.select(null);
-
   g.transition()
       .duration(750)
       .style("stroke-width", "1.5px")
       .attr("transform", "");
   }
 }
-
-
 </script>
