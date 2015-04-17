@@ -34,6 +34,7 @@ path {
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/queue.v1.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
+<body><form> <b>Time</b>: 2011<input type="range" name="points" min="2011" max="2012" step="1" value="0" id="slider-time" oninput=";">2012<br></form> 
 <script>
 
 var width = 960,
@@ -46,18 +47,42 @@ var projection = d3.geo.albersUsa()
 var path = d3.geo.path()
     .projection(projection);
 
-var svg = d3.select("body").append("svg")
+/*var svg = d3.select("body").append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height);*/
+	
+	d3.selectAll("input").each(function(d) {  
+    if(d3.select(this).attr("type") === "range"){
+		 d3.select(this).on("input", function(e){
+			year = document.getElementById("slider-time").value;
+			console.log(year)
+			if(year == 2011)
+			{
+				queue()
+    				.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+    				.defer(d3.json, "data/us-congress-111.json")
+   	    				.await(ready);
+	        }
+			else
+			{
+				queue()
+    			.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+   				 .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/450f6be2e8f3bd969fae0cc7d19db6bde5d614ed/us-congress-113.json")
+    				.await(ready);
+		   }
+	   })
+      }
+  }) 
 
-queue()
-    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-    .defer(d3.json, "data/us-congress-111.json")
-    .await(ready);
+  
 
 function ready(error, us, congress) {
   if (error) return console.error(error);
-
+  //svg.exit().remove()
+ 
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
   svg.append("defs").append("path")
       .attr("id", "land")
       .datum(topojson.feature(us, us.objects.land))
