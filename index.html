@@ -129,7 +129,7 @@ var path = d3.geo.path()
 	
 	queue()
     				.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-    				.defer(d3.json, "data/us-congress-111.json")
+    				.defer(d3.json, "data/us-congress-108.json")
 					.await(ready);
 					
 						d3.selectAll("input").each(function(d) {  
