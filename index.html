@@ -126,8 +126,11 @@ var path = d3.geo.path()
 	queue()
 		.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
 		.defer(d3.json, "data/us-congress-108.json")
+    .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
 	.await(ready);
-					
+
+    //.defer(d3.json, "data/us-congress-108.json")
+
 	d3.selectAll("input").each(function(d) {  
     if(d3.select(this).attr("type") === "range"){
 		 d3.select(this).on("input", function(e){
@@ -166,7 +169,9 @@ var path = d3.geo.path()
       }
   }) 
   
-function ready(error, us, congress) {
+function ready(error, us, congress, stateId) {
+  console.log(stateId);
+  console.log(congress);
 	
 	var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -211,7 +216,7 @@ function ready(error, us, congress) {
           .style("stroke-width", 1.5 / scale + "px")
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
       }
-      
+
     function reset() {
       active.classed("active", false);
       active = d3.select(null);
