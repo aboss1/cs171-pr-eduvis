@@ -33,6 +33,7 @@ path {
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <body><form> <b>Time</b>: 2011<input type="range" name="points" min="2011" max="2012" step="1" value="0" id="slider-time" oninput=";">2012<br></form> 
 <script>
@@ -61,14 +62,14 @@ var path = d3.geo.path()
 			year = document.getElementById("slider-time").value;
 			console.log(year)
 			if(year == 2011)
-			{
+			{$("svg").wrapAll().remove(); 
 				queue()
     				.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
     				.defer(d3.json, "data/us-congress-111.json")
    	    				.await(ready);
 	        }
 			else
-			{
+			{$("svg").wrapAll().remove(); 
 				queue()
     			.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
    				 .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/450f6be2e8f3bd969fae0cc7d19db6bde5d614ed/us-congress-113.json")
