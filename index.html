@@ -103,11 +103,15 @@
        * @param {Object} response Response object returned by the API.
        * @param {Object} rawResponse Raw response from the API.
        */
-       var currRep = [];
+       var currRep = "None";
+       var currParty = "None";
+       var currImage;
       function renderResults(response, rawResponse) {
         console.log(response);
         var el = document.getElementById('results');
         currRep = response.officials[0].name;
+        currParty = response.officials[0].party;
+        currImage = response.officials[0].photoUrl;
 
         /*var normalizedAddress = response.normalizedInput.line1 + ' ' +
             response.normalizedInput.city + ', ' +
@@ -249,7 +253,9 @@ function ready(error, us, congress, stateId) {
     .offset([-10, 0])
     .html(function(d) {
       var rep = searchOcdId(d.id);
-      return "<strong>Representative:</strong> <span style='color:black'>" + currRep + "</span>";
+      return "<strong>Representative:</strong> <span style='color:black'>" + currRep + "</span><br>" 
+              + "<strong>Party:</strong> <span style='color:black'>" + currParty + "</span><br>"
+              + "<img src = '" + currImage + "'alt = 'No Image' width='100' height='128'/>";
     })
 
   svg.call(tip);
