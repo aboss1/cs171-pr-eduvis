@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html>
   <head>
@@ -34,7 +33,18 @@
        */
       function renderResults(response, rawResponse) {
         var el = document.getElementById('results');
-        console.log(response);
+        var response2=[]
+        //console.log(response['results']);
+        for (i = 0; i < response['results'].length; i++) { 
+   // if((response['results'][i]["name"].indexOf("district")>1)&&(response['results'][i]["name"].indexOf("Senate")>1)){
+    if((response['results'][i]["name"].indexOf("district")>1)){
+        response2[i]=response['results'][i]
+        // console.log(response2.length)
+   }
+}
+console.log(response2.length)
+    console.log(response2)
+
         /*if (!response || response.error) {
           el.appendChild(document.createTextNode(
               'Error while trying to fetch polling place'));
@@ -66,8 +76,8 @@
        * Initialize the API client and make a request.
        */
       function load() {
-        gapi.client.setApiKey('AIzaSyBD0Zaan2_vBS13bE_uXonpKSn6yDr3KEc');
-        lookup('Kansas', renderResults);
+        gapi.client.setApiKey('AIzaSyDvIKG9TYLFmzRd7cL8XqVrWLYe1b47olY');
+        lookup('congressional', renderResults);
       }
     </script>
     <script src="https://apis.google.com/js/client.js?onload=load"></script>
