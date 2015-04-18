@@ -42,7 +42,6 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/queue.v1.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
  <div id="results"></div>
   <script>
@@ -67,14 +66,13 @@
             'path' : '/civicinfo/v2/representatives/ocdId',
             'params' : {'ocdId' : ocdId}
         });
-        req.execute(callback);
+       req.execute(callback);
       }
       /**
        * Render results in the DOM.
        * @param {Object} response Response object returned by the API.
        * @param {Object} rawResponse Raw response from the API.
        */
-       var currRep = [];
       function renderResults(response, rawResponse) {
         console.log(response);
         var el = document.getElementById('results');
@@ -84,14 +82,12 @@
           return;
         }
         for(var r = 0; r < response.officials.length; r++){
-          /*var normEl = document.createElement('strong');
+          var normEl = document.createElement('strong');
           normEl.appendChild(document.createTextNode(
               'Representative ' + response.officials[r].name));
           el.appendChild(normEl);
-          console.log(response.officials[r].name);*/
-          currRep = response.officials[r].name;
+          console.log(response.officials[r].name);
         }
-
         /*var normalizedAddress = response.normalizedInput.line1 + ' ' +
             response.normalizedInput.city + ', ' +
             response.normalizedInput.state + ' ' +
@@ -117,6 +113,8 @@
        * Initialize the API client and make a request.
        */
       function load(ocdID) {
+        console.log(ocdID);
+
         //if hover, lookup
         gapi.client.setApiKey('AIzaSyAOKqDbT8WncGmaXR4WQAnrgGZ8g1OnWv4');
         lookup(ocdID, renderResults);
@@ -212,11 +210,10 @@ function ready(error, us, congress, stateId) {
     for (var m = 0; m< modifiedData.length; m++){
       if (givenID == modifiedData[m].fullId){
         console.log(modifiedData[m].fullId)
-        var rep = load(modifiedData[m].ocdID);
+        load(modifiedData[m].ocdID);
         break;
       }
     }
-    return rep;
   }
   var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -226,16 +223,6 @@ function ready(error, us, congress, stateId) {
     .attr("width", width)
     .attr("height", height)
     .on("click", reset);
-  
-  var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-10, 0])
-    .html(function(d) {
-      var rep = searchOcdId(d.id);
-      return "<strong>Representative:</strong> <span style='color:red'>" + currRep + "</span>";
-    })
-
-  svg.call(tip);
 
   var g = svg.append("g")
   .style("stroke-width", "1.5px");
@@ -245,8 +232,7 @@ function ready(error, us, congress, stateId) {
         .attr("d", path)
         .attr("class", "feature")
         .on("click", clicked)
-        .on("mouseover", tip.show)
-        .on("mouseout", tip.hide);
+        .on("mouseover", function(d){searchOcdId(d.id);});
     g.append("path")
         .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
         .attr("class", "mesh")
