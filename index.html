@@ -38,6 +38,35 @@
   stroke: #fff;
   stroke-width: 1.5px;
 }
+.d3-tip {
+  opacity: .6;
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: gray;
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: gray;
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
 </style>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/queue.v1.min.js"></script>
@@ -78,19 +107,7 @@
       function renderResults(response, rawResponse) {
         console.log(response);
         var el = document.getElementById('results');
-        if (!response || response.error) {
-          el.appendChild(document.createTextNode(
-              'Error while trying to fetch representative'));
-          return;
-        }
-        for(var r = 0; r < response.officials.length; r++){
-          /*var normEl = document.createElement('strong');
-          normEl.appendChild(document.createTextNode(
-              'Representative ' + response.officials[r].name));
-          el.appendChild(normEl);
-          console.log(response.officials[r].name);*/
-          currRep = response.officials[r].name;
-        }
+        currRep = response.officials[0].name;
 
         /*var normalizedAddress = response.normalizedInput.line1 + ' ' +
             response.normalizedInput.city + ', ' +
@@ -232,7 +249,7 @@ function ready(error, us, congress, stateId) {
     .offset([-10, 0])
     .html(function(d) {
       var rep = searchOcdId(d.id);
-      return "<strong>Representative:</strong> <span style='color:red'>" + currRep + "</span>";
+      return "<strong>Representative:</strong> <span style='color:black'>" + currRep + "</span>";
     })
 
   svg.call(tip);
