@@ -290,7 +290,6 @@ function ready(error, us, congress, stateId) {
   function searchOcdId(givenID){
     for (var m = 0; m< modifiedData.length; m++){
       if (givenID == modifiedData[m].fullId){
-        console.log(modifiedData[m].fullId)
         var rep = load(modifiedData[m].ocdID);
         break;
       }
