@@ -141,7 +141,8 @@ var path = d3.geo.path()
         queue()
             .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
             .defer(d3.json, "data/us-congress-108.json")
-          .await(eighthReady);
+            .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+          .await(testReady);
         
       }
       else if(year == 2)
@@ -159,7 +160,7 @@ var path = d3.geo.path()
             .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
             .await(ready);
        }
-       else{
+       else if (year == 4){
          $("svg").wrapAll().remove(); 
          queue()
           .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
@@ -171,7 +172,88 @@ var path = d3.geo.path()
   })
 
 var modifiedData = [];
-function eighthReady(error, us, congress, stateId) {
+
+function testReady(error, us, congress, rep) {
+  console.log(rep);
+  for (r = 0; r<rep.objects.length; r++){
+    oneRep = rep.objects[r];
+    if(oneRep.congress_numbers!=null){
+    for(y = 0; y<oneRep.congress_numbers.length; y++){
+      if(oneRep.congress_numbers[y] == 108){
+        console.log(oneRep.person.firstname);
+      }
+    }
+    }
+  }
+  var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+  svg.append("rect")
+    .attr("class", "background")
+    .attr("width", width)
+    .attr("height", height)
+    .on("click", reset);
+  
+  /*var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+      var rep = searchOcdId(d.id);
+      return "<strong>Representative:</strong> <span style='color:black'>" + currRep + "</span><br>" 
+              + "<strong>Party:</strong> <span style='color:black'>" + currParty + "</span><br>"
+              + "<img src = '" + currImage + "'alt = 'No Image' width='100' height='128'/>";
+    })
+
+  svg.call(tip);*/
+
+  var g = svg.append("g")
+  .style("stroke-width", "1.5px");
+    g.selectAll("path")
+        .data(topojson.feature(congress, congress.objects.districts).features)
+      .enter().append("path")
+        .attr("d", path)
+        .attr("class", "feature")
+        .on("click", clicked)
+        //.on("mouseover", tip.show)
+        //.on("mouseout", tip.hide);
+    g.append("path")
+        .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+        .attr("class", "mesh")
+        .attr("d", path);
+        g.append("path")
+        .attr("class", "district-boundaries")
+        .datum(topojson.mesh(congress, congress.objects.districts, function(a, b) { return a !== b && (a.id / 1000 | 0) === (b.id / 1000 | 0); }))
+        .attr("d", path).append("title")
+        .text(function(d) { return d.id; });
+    
+    function clicked(d) {
+      if (active.node() === this) return reset();
+      active.classed("active", false);
+      active = d3.select(this).classed("active", true);
+      var bounds = path.bounds(d),
+          dx = bounds[1][0] - bounds[0][0],
+          dy = bounds[1][1] - bounds[0][1],
+          x = (bounds[0][0] + bounds[1][0]) / 2,
+          y = (bounds[0][1] + bounds[1][1]) / 2,
+          scale = .9 / Math.max(dx / width, dy / height),
+          translate = [width / 2 - scale * x, height / 2 - scale * y];
+      g.transition()
+          .duration(750)
+          .style("stroke-width", 1.5 / scale + "px")
+          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+      }
+
+    function reset() {
+      active.classed("active", false);
+      active = d3.select(null);
+      g.transition()
+          .duration(750)
+          .style("stroke-width", "1.5px")
+          .attr("transform", "");
+    }
+}
+
+function eighthReady(error, us, congress) {
 
   var svg = d3.select("body").append("svg")
     .attr("width", width)
