@@ -1,0 +1,16 @@
+<script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script>
+
+d3.json("data.csv",function(error,data){
+var newData=[]
+	    for(j=0;j<data["objects"].length;j++){
+    console.log(data["objects"][j]["congress_numbers"][0])
+    if(data["objects"][j]["congress_numbers"][0]==108){
+    	newData[j]=data["objects"][j]
+    	// console.log("jehas")
+    }
+     } console.log(newData)
+  })
+
+</script>
