@@ -4,8 +4,33 @@
 <head>
 <style>
 body{
-    font-family: 'PT Sans', sans-serif;
-    font-weight: 10;
+font-family: "Lucida Grande", Tahoma;
+  font-size: 10px;
+  font-weight: lighter;
+  font-variant: normal;
+  text-transform: uppercase;
+  color: #666666;
+        margin-top: 10px;
+  text-align: center!important;
+  letter-spacing: 0.3em;
+}
+.large{
+  font-family: "Lucida Grande", Tahoma;
+  font-size: 14px;
+  font-weight: lighter;
+  font-variant: normal;
+  text-transform: uppercase;
+  color: #666666;
+        margin-top: 10px;
+  text-align: center!important;
+  letter-spacing: 0.3em;
+}
+#circle{
+  width: 100px;
+  height: 120px;
+  border-radius: 50px;
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
 }
 .background {
   fill: none;
@@ -138,7 +163,6 @@ var year;
 var modifiedData = [];
 
 function testReady(error, us, congress, rep, stateId) {
-  console.log(rep);
   var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
@@ -153,16 +177,14 @@ function testReady(error, us, congress, rep, stateId) {
     .offset([-10, 0])
     .html(function(d) {
       var repre = searchMember(d.id);
-      console.log(repre);
-      return "<strong>Representative:</strong> <span style='color:black'>" + 
+      return "<span style='color:white' class='large'>" + 
               repre.person.firstname + " " + repre.person.lastname + "</span><br>" 
-              + "<strong>Party:</strong> <span style='color:black'>" + repre.party + "</span><br>"
-              + "<img src = '" + "https://theunitedstates.io/images/congress/original/"+ repre.person.bioguideid + ".jpg" + "'alt = 'No Image' width='100' height='128'/>";
+              + "<span style='color:white'>" + repre.party + "</span><br>"
+              + "<img src = '" + "https://theunitedstates.io/images/congress/original/"+ repre.person.bioguideid + ".jpg" + "'alt = 'No Image' id = 'circle'/>";
     })
 
   svg.call(tip);
 
-  console.log(congress);
   var districts = congress.objects.districts.geometries;
   for (var c = 0; c<districts.length; c++){
     var newModifiedData = {};
@@ -183,7 +205,6 @@ function testReady(error, us, congress, rep, stateId) {
       }
     }
   }
-  console.log(modifiedData);
 
   function searchModified(givenID){
     for (m = 0; m <modifiedData.length; m++){
@@ -220,6 +241,7 @@ function testReady(error, us, congress, rep, stateId) {
               }
             }
           }
+          return 1;
         //var rep = load(modifiedData[m].ocdID);
         //break;
       //}
@@ -234,6 +256,15 @@ function testReady(error, us, congress, rep, stateId) {
       .enter().append("path")
         .attr("d", path)
         .attr("class", "feature")
+        //.attr("fill", function (d){console.log(d);})
+        .style("fill", function(d){
+                        var per = searchMember(d.id);
+                        if (per.party == "Republican")
+                          return "#ff4c4c";
+                        else if(per.party == "Democrat")
+                          return "#5591e5";
+
+        })
         .on("click", clicked)
         .on("mouseover", tip.show)
         .on("mouseout", tip.hide);
