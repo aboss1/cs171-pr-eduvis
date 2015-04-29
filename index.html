@@ -84,30 +84,10 @@ body{
 
  <div id="results"></div>
   <script>
-      /**
-       * Build and execute request to look up voter info for provided address.
-       * @param {string} address Address for which to fetch voter info.
-       * @param {function(Object)} callback Function which takes the
-       *     response object as a parameter.
-       */
-/**
- * Render results in the DOM.
- * @param {Object} response Response object returned by the API.
- * @param {Object} rawResponse Raw response from the API.
- */
  var currRep = "None";
  var currParty = "None";
  var currImage;
 
-
-/**
- * Initialize the API client and make a request.
- */
-function load(ocdID) {
-  //if hover, lookup
-  gapi.client.setApiKey('AIzaSyAOKqDbT8WncGmaXR4WQAnrgGZ8g1OnWv4');
-  lookup(ocdID, renderResults);
-}
 var width = 960,
     height = 600,
     active = d3.select(null);
@@ -177,7 +157,7 @@ function testReady(error, us, congress, rep, stateId) {
       return "<strong>Representative:</strong> <span style='color:black'>" + 
               repre.person.firstname + " " + repre.person.lastname + "</span><br>" 
               + "<strong>Party:</strong> <span style='color:black'>" + repre.party + "</span><br>"
-              + "<img src = '" + currImage + "'alt = 'No Image' width='100' height='128'/>";
+              + "<img src = '" + "https://theunitedstates.io/images/congress/original/"+ repre.person.bioguideid + ".jpg" + "'alt = 'No Image' width='100' height='128'/>";
     })
 
   svg.call(tip);
@@ -293,209 +273,7 @@ function testReady(error, us, congress, rep, stateId) {
           .attr("transform", "");
     }
 }
-function renderResults(response, rawResponse) {
-  var el = document.getElementById('results');
-  if(year == 4){
-    currRep = response.officials[0].name;
-    currParty = response.officials[0].party;
-    currImage = response.officials[0].photoUrl;
-  }
-}
 
-function eighthReady(error, us, congress) {
-  console.log(congress);
 
-  var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
-  svg.append("rect")
-    .attr("class", "background")
-    .attr("width", width)
-    .attr("height", height)
-    .on("click", reset);
-  
-  /*var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-10, 0])
-    .html(function(d) {
-      var rep = searchOcdId(d.id);
-      return "<strong>Representative:</strong> <span style='color:black'>" + currRep + "</span><br>" 
-              + "<strong>Party:</strong> <span style='color:black'>" + currParty + "</span><br>"
-              + "<img src = '" + currImage + "'alt = 'No Image' width='100' height='128'/>";
-    })
-
-  svg.call(tip);*/
-
-  var g = svg.append("g")
-  .style("stroke-width", "1.5px");
-    g.selectAll("path")
-        .data(topojson.feature(congress, congress.objects.districts).features)
-      .enter().append("path")
-        .attr("d", path)
-        .attr("class", "feature")
-        .on("click", clicked)
-        //.on("mouseover", tip.show)
-        //.on("mouseout", tip.hide);
-    g.append("path")
-        .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
-        .attr("class", "mesh")
-        .attr("d", path);
-        g.append("path")
-        .attr("class", "district-boundaries")
-        .datum(topojson.mesh(congress, congress.objects.districts, function(a, b) { return a !== b && (a.id / 1000 | 0) === (b.id / 1000 | 0); }))
-        .attr("d", path).append("title")
-        .text(function(d) { return d.id; });
-    
-    function clicked(d) {
-      if (active.node() === this) return reset();
-      active.classed("active", false);
-      active = d3.select(this).classed("active", true);
-      var bounds = path.bounds(d),
-          dx = bounds[1][0] - bounds[0][0],
-          dy = bounds[1][1] - bounds[0][1],
-          x = (bounds[0][0] + bounds[1][0]) / 2,
-          y = (bounds[0][1] + bounds[1][1]) / 2,
-          scale = .9 / Math.max(dx / width, dy / height),
-          translate = [width / 2 - scale * x, height / 2 - scale * y];
-      g.transition()
-          .duration(750)
-          .style("stroke-width", 1.5 / scale + "px")
-          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-      }
-
-    function reset() {
-      active.classed("active", false);
-      active = d3.select(null);
-      g.transition()
-          .duration(750)
-          .style("stroke-width", "1.5px")
-          .attr("transform", "");
-    }
-}
- function lookup(ocdId, callback) {
- /**
-   * Election ID for which to fetch voter info.
-   * @type {number}
-   */
-  var electionId = 2000;
-
-  /**
-   * Request object for given parameters.
-   * @type {gapi.client.HttpRequest}
-   */
-  var req = gapi.client.request({
-      'path' : '/civicinfo/v2/representatives/ocdId',
-      'params' : {'ocdId' : ocdId}
-  });
-  req.execute(callback);
-}
-
-function ready(error, us, congress, stateId) {
-  console.log(congress);
-  console.log(stateId);
-  //# of districts = 441
-  console.log(congress.objects.districts.geometries);
-  //check id of district geometries
-    //if id is equal to stateID
-      //assign
-
-  var districts = congress.objects.districts.geometries;
-  for (var c = 0; c<districts.length; c++){
-    var newModifiedData = {};
-    for (var s = 0; s<stateId.length; s++){
-      var stateID = districts[c].id.toString();
-      var districtID = districts[c].id.toString();
-      stateID = stateID.substring(0, stateID.length - 2);
-      districtID = districtID.slice(-2);
-      if (stateID == stateId[s].id){
-        newModifiedData.districtId = parseInt(districtID, 10);
-        newModifiedData.stateAbbrev = stateId[s].code.toLowerCase();
-        newModifiedData.stateId = stateID;
-        newModifiedData.fullId = districts[c].id;
-        newModifiedData.stateName = stateId[s].name;
-        newModifiedData.ocdID = "ocd-division/country:us/state:" + newModifiedData.stateAbbrev + "/cd:" 
-                                  + newModifiedData.districtId;
-        modifiedData.push(newModifiedData);
-      }
-    }
-  }
-
-  function searchOcdId(givenID){
-    for (var m = 0; m< modifiedData.length; m++){
-      if (givenID == modifiedData[m].fullId){
-        var rep = load(modifiedData[m].ocdID);
-        break;
-      }
-    }
-    return rep;
-  }
-  var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height);
-  svg.append("rect")
-    .attr("class", "background")
-    .attr("width", width)
-    .attr("height", height)
-    .on("click", reset);
-  
-  var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-10, 0])
-    .html(function(d) {
-      var rep = searchOcdId(d.id);
-      return "<strong>Representative:</strong> <span style='color:black'>" + currRep + "</span><br>" 
-              + "<strong>Party:</strong> <span style='color:black'>" + currParty + "</span><br>"
-              + "<img src = '" + currImage + "'alt = 'No Image' width='100' height='128'/>";
-    })
-
-  svg.call(tip);
-
-  var g = svg.append("g")
-  .style("stroke-width", "1.5px");
-    g.selectAll("path")
-        .data(topojson.feature(congress, congress.objects.districts).features)
-      .enter().append("path")
-        .attr("d", path)
-        .attr("class", "feature")
-        .on("click", clicked)
-        .on("mouseover", tip.show)
-        .on("mouseout", tip.hide);
-    g.append("path")
-        .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
-        .attr("class", "mesh")
-        .attr("d", path);
-        g.append("path")
-        .attr("class", "district-boundaries")
-        .datum(topojson.mesh(congress, congress.objects.districts, function(a, b) { return a !== b && (a.id / 1000 | 0) === (b.id / 1000 | 0); }))
-        .attr("d", path).append("title")
-        .text(function(d) { return d.id; });
-    
-    function clicked(d) {
-      if (active.node() === this) return reset();
-      active.classed("active", false);
-      active = d3.select(this).classed("active", true);
-      var bounds = path.bounds(d),
-          dx = bounds[1][0] - bounds[0][0],
-          dy = bounds[1][1] - bounds[0][1],
-          x = (bounds[0][0] + bounds[1][0]) / 2,
-          y = (bounds[0][1] + bounds[1][1]) / 2,
-          scale = .9 / Math.max(dx / width, dy / height),
-          translate = [width / 2 - scale * x, height / 2 - scale * y];
-      g.transition()
-          .duration(750)
-          .style("stroke-width", 1.5 / scale + "px")
-          .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-      }
-
-    function reset() {
-      active.classed("active", false);
-      active = d3.select(null);
-      g.transition()
-          .duration(750)
-          .style("stroke-width", "1.5px")
-          .attr("transform", "");
-    }
-}
 </script>
-    <script src="https://apis.google.com/js/client.js?onload=load"></script>
 </body>
