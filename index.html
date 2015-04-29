@@ -80,7 +80,7 @@ body{
 </head>
 <body>
 
- <form> <b>Time</b>: 2003<input type="range" name="points" min="1" max="4" step="1" value="0" id="slider-time" oninput=";">2013<br></form>
+ <form> <b>Time</b>: 2003<input type="range" name="points" min="1" max="2" step="1" value="0" id="slider-time" oninput=";">2011<br></form>
 
  <div id="results"></div>
   <script>
@@ -99,12 +99,7 @@ body{
  var currParty = "None";
  var currImage;
 
-function renderResults(response, rawResponse) {
-  var el = document.getElementById('results');
-  currRep = response.officials[0].name;
-  currParty = response.officials[0].party;
-  currImage = response.officials[0].photoUrl;
-}
+
 /**
  * Initialize the API client and make a request.
  */
@@ -122,15 +117,16 @@ var projection = d3.geo.albersUsa()
 var path = d3.geo.path()
     .projection(projection);
   
-  queue()
-    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-    .defer(d3.json, "data/us-congress-108.json")
-    //.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/450f6be2e8f3bd969fae0cc7d19db6bde5d614ed/us-congress-113.json")
-    .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
-  .await(eighthReady);
+queue()
+  .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+  .defer(d3.json, "data/us-congress-108.json")
+  .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+  //.defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/450f6be2e8f3bd969fae0cc7d19db6bde5d614ed/us-congress-113.json")
+  .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
+.await(testReady);
 
     //.defer(d3.json, "data/us-congress-108.json")
-
+var year;
   d3.selectAll("input").each(function(d) {  
     if(d3.select(this).attr("type") === "range"){
      d3.select(this).on("input", function(e){
@@ -142,6 +138,7 @@ var path = d3.geo.path()
             .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
             .defer(d3.json, "data/us-congress-108.json")
             .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+            .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
           .await(testReady);
         
       }
@@ -150,41 +147,18 @@ var path = d3.geo.path()
         queue()
             .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
             .defer(d3.json, "data/us-congress-111.json")
-                .await(eighthReady);
-          }
-      else if (year == 3)
-      {$("svg").wrapAll().remove(); 
-        queue()
-          .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-           .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/450f6be2e8f3bd969fae0cc7d19db6bde5d614ed/us-congress-113.json")
+            .defer(d3.json, "https://www.govtrack.us/api/v2/role?offset=100&limit=6000&sort=-enddate")
             .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
-            .await(ready);
-       }
-       else if (year == 4){
-         $("svg").wrapAll().remove(); 
-         queue()
-          .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-           .defer(d3.json, "data/us-congress-114.json")
-         .await(eighthReady);
-       }
+                .await(testReady);
+          }
      })
       }
   })
 
 var modifiedData = [];
 
-function testReady(error, us, congress, rep) {
+function testReady(error, us, congress, rep, stateId) {
   console.log(rep);
-  for (r = 0; r<rep.objects.length; r++){
-    oneRep = rep.objects[r];
-    if(oneRep.congress_numbers!=null){
-    for(y = 0; y<oneRep.congress_numbers.length; y++){
-      if(oneRep.congress_numbers[y] == 108){
-        console.log(oneRep.person.firstname);
-      }
-    }
-    }
-  }
   var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
@@ -194,17 +168,84 @@ function testReady(error, us, congress, rep) {
     .attr("height", height)
     .on("click", reset);
   
-  /*var tip = d3.tip()
+  var tip = d3.tip()
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-      var rep = searchOcdId(d.id);
-      return "<strong>Representative:</strong> <span style='color:black'>" + currRep + "</span><br>" 
-              + "<strong>Party:</strong> <span style='color:black'>" + currParty + "</span><br>"
+      var repre = searchMember(d.id);
+      console.log(repre);
+      return "<strong>Representative:</strong> <span style='color:black'>" + 
+              repre.person.firstname + " " + repre.person.lastname + "</span><br>" 
+              + "<strong>Party:</strong> <span style='color:black'>" + repre.party + "</span><br>"
               + "<img src = '" + currImage + "'alt = 'No Image' width='100' height='128'/>";
     })
 
-  svg.call(tip);*/
+  svg.call(tip);
+
+  console.log(congress);
+  var districts = congress.objects.districts.geometries;
+  for (var c = 0; c<districts.length; c++){
+    var newModifiedData = {};
+    for (var s = 0; s<stateId.length; s++){
+      var stateID = districts[c].id.toString();
+      var districtID = districts[c].id.toString();
+      stateID = stateID.substring(0, stateID.length - 2);
+      districtID = districtID.slice(-2);
+      if (stateID == stateId[s].id){
+        newModifiedData.districtId = parseInt(districtID, 10);
+        newModifiedData.stateAbbrev = stateId[s].code.toLowerCase();
+        newModifiedData.stateId = stateID;
+        newModifiedData.fullId = districts[c].id;
+        newModifiedData.stateName = stateId[s].name;
+        newModifiedData.ocdID = "ocd-division/country:us/state:" + newModifiedData.stateAbbrev + "/cd:" 
+                                  + newModifiedData.districtId;
+        modifiedData.push(newModifiedData);
+      }
+    }
+  }
+  console.log(modifiedData);
+
+  function searchModified(givenID){
+    for (m = 0; m <modifiedData.length; m++){
+      if(givenID == modifiedData[m].fullId){
+        return modifiedData[m].stateAbbrev;
+      }
+    }
+  }
+  var cong = 108;
+  if(year == 1){
+    cong = 108;
+  }
+  else if(year == 2){
+    cong = 111;
+  }
+  else if(year == 3){
+    cong = 113;
+  }
+  function searchMember(givenID){
+    //for (var m = 0; m< modifiedData.length; m++){
+      //if (givenID == modifiedData[m].fullId){
+          for (r = 0; r<rep.objects.length; r++){
+            oneRep = rep.objects[r];
+            if(oneRep.congress_numbers!=null){
+              for(y = 0; y<oneRep.congress_numbers.length; y++){
+                if(oneRep.congress_numbers[y] == cong){
+                  var state = searchModified(givenID).toUpperCase();
+                  var disID = parseInt(givenID.toString().slice(-2), 10);
+                  if(state == oneRep.state && disID == oneRep.district){
+                    return oneRep;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        //var rep = load(modifiedData[m].ocdID);
+        //break;
+      //}
+    //}
+    //return rep;
+  }
 
   var g = svg.append("g")
   .style("stroke-width", "1.5px");
@@ -214,8 +255,8 @@ function testReady(error, us, congress, rep) {
         .attr("d", path)
         .attr("class", "feature")
         .on("click", clicked)
-        //.on("mouseover", tip.show)
-        //.on("mouseout", tip.hide);
+        .on("mouseover", tip.show)
+        .on("mouseout", tip.hide);
     g.append("path")
         .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
         .attr("class", "mesh")
@@ -252,8 +293,17 @@ function testReady(error, us, congress, rep) {
           .attr("transform", "");
     }
 }
+function renderResults(response, rawResponse) {
+  var el = document.getElementById('results');
+  if(year == 4){
+    currRep = response.officials[0].name;
+    currParty = response.officials[0].party;
+    currImage = response.officials[0].photoUrl;
+  }
+}
 
 function eighthReady(error, us, congress) {
+  console.log(congress);
 
   var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -341,6 +391,7 @@ function eighthReady(error, us, congress) {
 }
 
 function ready(error, us, congress, stateId) {
+  console.log(congress);
   console.log(stateId);
   //# of districts = 441
   console.log(congress.objects.districts.geometries);
