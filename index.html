@@ -337,7 +337,7 @@ function testReady(error, us, info, congress, rep, stateId) {
         .text(function(d) { return d.id; });
     
     function clicked(d) {
-
+console.log(d.id)
       if (active.node() === this) return reset();
       active.classed("active", false);
       active = d3.select(this).classed("active", true);
@@ -380,9 +380,8 @@ function testReady(error, us, info, congress, rep, stateId) {
               }
             }
         }
-// store3 = store.concat(store2);
-console.log(store2)
 
+if(store2.length!==0){
 var width1 = 960
 var height1 = 600
 var svg1 = d3.select("body").append("svg")
@@ -393,30 +392,10 @@ var svg1 = d3.select("body").append("svg")
     var maxstore=(Math.max.apply(Math, store2))
     var divide= maxstore/(height-30)
     console.log(divide)
-  // svg1.append("rect1")
-  //   .attr("class", "background")
-  //   .attr("width", width1)
-  //   .attr("height", height1);
-    //  svg1.append("rect2")
-    // .attr("class", "background1")
-    // .attr("width", width)
-    // .attr("height", height)
-// var x1 = d3.scale.ordinal()
-//     .rangeRoundBands([0, width1], .1);
-// var y1 = d3.scale.linear()
-//     .range([960, 0]);
-// var xAxis = d3.svg.axis()
-//     .scale(x1)
-//     .orient("bottom");
-
-// var yAxis = d3.svg.axis()
-//     .scale(y1)
-//     .orient("left");
+  
 var chart = d3.select(".background1")
     .attr("width", width1)
     .attr("height", height1);
-  // x1.domain([0, d3.max(store, function(d) { return d; })]);
-  // y1.domain([0, d3.max(store, function(d) { return d; })]);
 
   var barWidth = width / store2.length;
 
@@ -425,25 +404,12 @@ var chart = d3.select(".background1")
     .enter().append("g")
       .attr("transform", function(d, i) {console.log(d);return "translate(" + i * barWidth + ",0)"; });
 
-  // bar.append("rect1")
-  //     .attr("y1", function(d) { console.log(d); return d; })
-  //     .attr("height1", function(d) { return 960 - d/1000; })
-  //     .attr("width1", barWidth - 1);
-  // chart.append("g")
-  //     .attr("class", "x axis")
-  //     .attr("transform", "translate(0," + height1 + ")")
-
-  //     .call(xAxis);
-  // chart.append("g")
-  //     .attr("class", "y axis")
-  //     .call(yAxis);
-  console.log(store2.length)
   if(height!=0){
   bar.append("rect")
       .attr("y", function(d) { return 0; })
       .attr("height", function(d) { return d/divide; })
       .attr("width", barWidth - 1);}
-      
+
   bar.append("text")
       .attr("x", barWidth / 2)
       .attr("y", height-20)
@@ -453,7 +419,30 @@ var chart = d3.select(".background1")
   
    if(info[0]["EST"]==267987){console.log("true")}
     if(info[0]["ORDER"]==1){console.log("true")}
-      }
+    }
+    else{
+   
+      var width1 = 960
+var height1 = 600
+var svg1 = d3.select("body").append("svg")
+    .attr("width", width1)
+    .attr("height", 50)
+    .attr("class", "background1");
+
+  
+var chart = d3.select(".background1")
+    .attr("width", width1)
+    .attr("height", 50);
+
+
+      chart.append("text")
+      .attr("x", width1 / 2)
+      .attr("y", 0).attr("font-family", "sans-serif")
+               .attr("font-size", "20px")
+      .attr("dy", "1em")
+      .text( "No Info");
+
+    }  }
 
     function reset() {
 
