@@ -190,25 +190,25 @@ function testReady(error, us, info, congress, rep, stateId) {
       console.log(d.id);
       //if(d.id<1000){
          //for(var i=0;i<geoid.length;i++){
-              for(var j=0;j<info.length;j++){
-                if(parseInt(info[j]["GEOID"].substring(7,11), 10)==d.id)
-                  {
-                    if(info[j]["TBLID"]=="P002"){
-                      for(var i=2;i<6;i++){
-                        if(info[j]["ORDER"]==i){
-                          console.log(info[j]["EST"])
-                        }
-                      }
-                    }
-                    if(info[j]["TBLID"]=="P004"){
-                      for(var i=2;i<48;i++){
-                        if(info[j]["ORDER"]==i){
-                          console.log(info[j]["EST"])
-                        }
-                      }
-                    }
-                  }
-              } 
+      /*for(var j=0;j<info.length;j++){
+        if(parseInt(info[j]["GEOID"].substring(7,11), 10)==d.id)
+          {
+            if(info[j]["TBLID"]=="P002"){
+              for(var i=2;i<6;i++){
+                if(info[j]["ORDER"]==i){
+                  console.log(info[j]["EST"])
+                }
+              }
+            }
+            if(info[j]["TBLID"]=="P004"){
+              for(var i=2;i<48;i++){
+                if(info[j]["ORDER"]==i){
+                  console.log(info[j]["EST"])
+                }
+              }
+            }
+          }
+      } */
            //}
       //}
       /*if(d.id>=1000){
@@ -353,52 +353,25 @@ function testReady(error, us, info, congress, rep, stateId) {
           .style("stroke-width", 1.5 / scale + "px")
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
 
-          /*if(d.id<1000){
-         for(var i=0;i<geoid.length;i++){
-              for(var j=0;j<info.length;j++){
-                if(parseInt(info[j]["GEOID"].substring(8,11), 10)==d.id)
-                  {
-                    if(info[j]["TBLID"]=="P002"){
-                      for(var i=2;i<6;i++){
-                        if(info[j]["ORDER"]==i){
-                          //console.log(info[j]["EST"])
-                        }
-                      }
-                    }
-                    if(info[j]["TBLID"]=="P004"){
-                      for(var i=2;i<48;i++){
-                        if(info[j]["ORDER"]==i){
-                          //console.log(info[j]["EST"])
-                        }
-                      }
-                    }
+        for(var j=0;j<info.length;j++){
+          if(parseInt(info[j]["GEOID"].substring(7,11), 10)==d.id)
+            {
+              if(info[j]["TBLID"]=="P002"){
+                for(var i=2;i<6;i++){
+                  if(info[j]["ORDER"]==i){
+                    console.log(info[j]["EST"]);
                   }
-              } 
-           }
-      }
-      if(d.id>=1000){
-        // for(var i=0;i<geoid.length;i++){
-              for(var j=0;j<info.length;j++){
-                if(parseInt(info[j]["GEOID"].substring(7,11))==d.id)
-                  {
-                    if(info[j]["TBLID"]=="P002"){
-                      for(var i=2;i<6;i++){
-                        if(info[j]["ORDER"]==i){
-                          console.log(info[j]["EST"])
-                        }
-                      }
-                    }
-                    if(info[j]["TBLID"]=="P004"){
-                      for(var i=2;i<48;i++){
-                        if(info[j]["ORDER"]==i){
-                          console.log(info[j]["EST"])
-                        }
-                      }
-                    }
+                }
+              }
+              if(info[j]["TBLID"]=="P004"){
+                for(var i=2;i<48;i++){
+                  if(info[j]["ORDER"]==i){
+                    console.log(info[j]["EST"]);
                   }
-              } 
-          // }
-      }*/
+                }
+              }
+            }
+        } 
       }
 
     function reset() {
