@@ -166,7 +166,7 @@ var year;
 
 var modifiedData = [];
 
-function testReady(error, us, info,congress, rep, stateId) {
+function testReady(error, us, info, congress, rep, stateId) {
   var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
@@ -177,22 +177,21 @@ function testReady(error, us, info,congress, rep, stateId) {
     .on("click", reset);
    if(info[0]["EST"]==267987){console.log("true")}
     if(info[0]["ORDER"]==1){console.log("true")}
-  geoid=[]
+  /*geoid=[]
   for(var i=0;i<info.length;i++){
     geoid[i]=info[i]["GEOID"].substring(7,11)
-  }
+  }*/
 
   console.log(info[0]["TBLID"])
   var tip = d3.tip()
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-      console.log((d.id).toString())
-
-      if(d.id<1000){
-        // for(var i=0;i<geoid.length;i++){
+      console.log(d.id);
+      //if(d.id<1000){
+         //for(var i=0;i<geoid.length;i++){
               for(var j=0;j<info.length;j++){
-                if(parseInt(info[j]["GEOID"].substring(8,11))==d.id)
+                if(parseInt(info[j]["GEOID"].substring(7,11), 10)==d.id)
                   {
                     if(info[j]["TBLID"]=="P002"){
                       for(var i=2;i<6;i++){
@@ -210,9 +209,9 @@ function testReady(error, us, info,congress, rep, stateId) {
                     }
                   }
               } 
-          // }
-      }
-      if(d.id>=1000){
+           //}
+      //}
+      /*if(d.id>=1000){
         // for(var i=0;i<geoid.length;i++){
               for(var j=0;j<info.length;j++){
                 if(parseInt(info[j]["GEOID"].substring(7,11))==d.id)
@@ -234,7 +233,7 @@ function testReady(error, us, info,congress, rep, stateId) {
                   }
               } 
           // }
-      }
+      }*/
       var repre = searchMember(d.id);
       return "<span style='color:white' class='large'>" + 
               repre.person.firstname + " " + repre.person.lastname + "</span><br>" 
@@ -353,6 +352,53 @@ function testReady(error, us, info,congress, rep, stateId) {
           .duration(750)
           .style("stroke-width", 1.5 / scale + "px")
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+
+          /*if(d.id<1000){
+         for(var i=0;i<geoid.length;i++){
+              for(var j=0;j<info.length;j++){
+                if(parseInt(info[j]["GEOID"].substring(8,11), 10)==d.id)
+                  {
+                    if(info[j]["TBLID"]=="P002"){
+                      for(var i=2;i<6;i++){
+                        if(info[j]["ORDER"]==i){
+                          //console.log(info[j]["EST"])
+                        }
+                      }
+                    }
+                    if(info[j]["TBLID"]=="P004"){
+                      for(var i=2;i<48;i++){
+                        if(info[j]["ORDER"]==i){
+                          //console.log(info[j]["EST"])
+                        }
+                      }
+                    }
+                  }
+              } 
+           }
+      }
+      if(d.id>=1000){
+        // for(var i=0;i<geoid.length;i++){
+              for(var j=0;j<info.length;j++){
+                if(parseInt(info[j]["GEOID"].substring(7,11))==d.id)
+                  {
+                    if(info[j]["TBLID"]=="P002"){
+                      for(var i=2;i<6;i++){
+                        if(info[j]["ORDER"]==i){
+                          console.log(info[j]["EST"])
+                        }
+                      }
+                    }
+                    if(info[j]["TBLID"]=="P004"){
+                      for(var i=2;i<48;i++){
+                        if(info[j]["ORDER"]==i){
+                          console.log(info[j]["EST"])
+                        }
+                      }
+                    }
+                  }
+              } 
+          // }
+      }*/
       }
 
     function reset() {
