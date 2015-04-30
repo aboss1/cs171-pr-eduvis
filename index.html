@@ -182,12 +182,12 @@ function testReady(error, us, info, congress, rep, stateId) {
     geoid[i]=info[i]["GEOID"].substring(7,11)
   }*/
 
-  console.log(info[0]["TBLID"])
+  // console.log(info[0]["TBLID"])
   var tip = d3.tip()
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-      console.log(d.id);
+      // console.log(d.id);
       //if(d.id<1000){
          //for(var i=0;i<geoid.length;i++){
       /*for(var j=0;j<info.length;j++){
@@ -352,29 +352,112 @@ function testReady(error, us, info, congress, rep, stateId) {
           .duration(750)
           .style("stroke-width", 1.5 / scale + "px")
           .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
-
+        store=[]
+        store2=[]
         for(var j=0;j<info.length;j++){
           if(parseInt(info[j]["GEOID"].substring(7,11), 10)==d.id)
             {
               if(info[j]["TBLID"]=="P002"){
                 for(var i=2;i<6;i++){
                   if(info[j]["ORDER"]==i){
-                    console.log(info[j]["EST"]);
+                    store.push(info[j]["EST"])
                   }
                 }
               }
               if(info[j]["TBLID"]=="P004"){
-                for(var i=2;i<48;i++){
+                for(var i=3;i<26;i++){
                   if(info[j]["ORDER"]==i){
-                    console.log(info[j]["EST"]);
+                    store2.push(info[j]["EST"])
+                    // console.log(info[j]["EST"]);
+                  }
+                }
+                for(var i=27;i<48;i++){
+                  if(info[j]["ORDER"]==i){
+                    store2.push(info[j]["EST"])
+                    // console.log(info[j]["EST"]);
                   }
                 }
               }
             }
-        } 
+        }
+// store3 = store.concat(store2);
+console.log(store2)
+
+var width1 = 960
+var height1 = 600
+var svg1 = d3.select("body").append("svg")
+    .attr("width", width1)
+    .attr("height", height1)
+    .attr("class", "background1");
+    // for(var i=2;i<store.length;i++){
+    var maxstore=(Math.max.apply(Math, store2))
+    var divide= maxstore/(height-30)
+    console.log(divide)
+  // svg1.append("rect1")
+  //   .attr("class", "background")
+  //   .attr("width", width1)
+  //   .attr("height", height1);
+    //  svg1.append("rect2")
+    // .attr("class", "background1")
+    // .attr("width", width)
+    // .attr("height", height)
+// var x1 = d3.scale.ordinal()
+//     .rangeRoundBands([0, width1], .1);
+// var y1 = d3.scale.linear()
+//     .range([960, 0]);
+// var xAxis = d3.svg.axis()
+//     .scale(x1)
+//     .orient("bottom");
+
+// var yAxis = d3.svg.axis()
+//     .scale(y1)
+//     .orient("left");
+var chart = d3.select(".background1")
+    .attr("width", width1)
+    .attr("height", height1);
+  // x1.domain([0, d3.max(store, function(d) { return d; })]);
+  // y1.domain([0, d3.max(store, function(d) { return d; })]);
+
+  var barWidth = width / store2.length;
+
+  var bar = chart.selectAll("g")
+      .data(store2)
+    .enter().append("g")
+      .attr("transform", function(d, i) {console.log(d);return "translate(" + i * barWidth + ",0)"; });
+
+  // bar.append("rect1")
+  //     .attr("y1", function(d) { console.log(d); return d; })
+  //     .attr("height1", function(d) { return 960 - d/1000; })
+  //     .attr("width1", barWidth - 1);
+  // chart.append("g")
+  //     .attr("class", "x axis")
+  //     .attr("transform", "translate(0," + height1 + ")")
+
+  //     .call(xAxis);
+  // chart.append("g")
+  //     .attr("class", "y axis")
+  //     .call(yAxis);
+  console.log(store2.length)
+  if(height!=0){
+  bar.append("rect")
+      .attr("y", function(d) { return 0; })
+      .attr("height", function(d) { return d/divide; })
+      .attr("width", barWidth - 1);}
+      
+  bar.append("text")
+      .attr("x", barWidth / 2)
+      .attr("y", height-20)
+      .attr("dy", ".75em")
+      .text(function(d,i) {if(i<23) return 5*i+"~"; else return 5*(i-23)+"~" });
+
+  
+   if(info[0]["EST"]==267987){console.log("true")}
+    if(info[0]["ORDER"]==1){console.log("true")}
       }
 
     function reset() {
+
+      $(".background1").wrapAll().remove();
       active.classed("active", false);
       active = d3.select(null);
       g.transition()
