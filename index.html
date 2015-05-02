@@ -383,54 +383,77 @@ data2=[]
 
 if(store2.length!==0){
 var width1 = 960
-var height1 = 600
+var height1 = 400
 var svg1 = d3.select("body").append("svg")
-    .attr("width", width1/2)
+    .attr("width", width1)
     .attr("height", height1)
     .attr("class", "background1");
     // for(var i=2;i<store.length;i++){
     var maxstore=(Math.max.apply(Math, store2))
-    var divide= maxstore/(height-30)
+    var divide= maxstore/(height1-30)
     console.log(divide)
   
 var chart = d3.select(".background1")
-    .attr("width", width1/2)
+    .attr("width", width1)
     .attr("height", height1);
 
-  var barWidth = width / (2*store2.length);
+  var barWidth = (width-20) / (2*store2.length);
 
   var bar = chart.selectAll("g")
       .data(store2)
     .enter().append("g")
-      .attr("transform", function(d, i) {return "translate(" + i * barWidth + ",0)"; });
+      .attr("transform", function(d, i) {return "translate(" + (i * barWidth +50)+ ",0)"; });
 
-  if(height!=0){
+      var yScale = d3.scale.linear().domain([0, maxstore])
+                     .range([height1-33, 0]);
+var y_axis = d3.svg.axis().scale(yScale).orient("left");;
+d3.select(".background1")
+  .append("g")
+    .attr("class","y axis")
+    .attr("transform","translate("+50+",0)")
+  .call(y_axis);
+svg1.select(".y.axis")
+  .selectAll("text")
+  // .attr("transform"," translate(0,15) rotate(-65)"); // To rotate the texts on x axis. Translate y position a little bit to prevent overlapping on axis line.
+  .style("font-size","7px")
+// d3.select("svg")
+//   .append("g")
+//     .attr("class","y axis")
+//     .attr("transform","translate(0,0)")
+//   .call(y_axis);
+  if(height1!=0){
   bar.append("rect")
-      .attr("y", function(d) { return 0; })
-      .attr("height", function(d) { return d/divide; })
+      .attr("y", function(d) {
+
+    return yScale(d);
+   })
+      .attr("height", function(d) {
+        // console.log(yScale(0) - yScale(d.value))
+    return (yScale(0) - yScale(d));
+   })
       .attr("width", barWidth - 1);}
 
   bar.append("text")
       .attr("x", 0)
-      .attr("y", height-30)
+      .attr("y", height1-30)
       .attr("dy", ".75em")
-      .text(function(d,i) {return data2[i]+"~"}).attr("font-family", "sans-serif")
-               .attr("font-size", "10px");
+      .text(function(d,i) {console.log(data2[i]);return data2[i].toString()})
+               .attr("font-size", "7px").style("text-anchor", "left");
                
                chart.append("text")
-      .attr("x", 0)
-      .attr("y", height)
-      .attr("dy", "-.05em")
-      .attr("dx", "4.75em")
+      .attr("x", 100)
+      .attr("y", height1)
+      // .attr("dy", "-.05em")
+      // .attr("dx", "1.75em")
       .text("Male Age").attr("font-family", "sans-serif")
-               .attr("font-size", "20px");
+               .attr("font-size", "12px");
                chart.append("text")
-      .attr("x", 0)
-      .attr("y", height)
-      .attr("dy", "-.05em")
-      .attr("dx", "30.75em")
+      .attr("x", 300)
+      .attr("y", height1)
+      // .attr("dy", "-.05em")
+      // .attr("dx", "20.75em")
       .text("Female Age").attr("font-family", "sans-serif")
-               .attr("font-size", "20px");
+               .attr("font-size", "12px");
 
   
    if(info[0]["EST"]==267987){console.log("true")}
@@ -456,12 +479,17 @@ var chart = d3.select(".background1")
       .attr("y", 0).attr("font-family", "sans-serif")
                .attr("font-size", "20px")
       .attr("dy", "1em")
-      .text( "No Info about Age distribution");
+      .text( "No Info about Age and Race distribution");
 
     }  
     if(store.length!==0){
 
 store3=["White","Black","Native American","Asian","Native Hawaiian","Other"]
+
+var store4 = store3.map(function (e, i) {
+    return [store3[i], store[i]];
+});
+console.log(store4)
 // P002#2#White alone
 // P002#3#Black or African American alone
 // P002#4#American Indian and Alaska Native alone
@@ -484,8 +512,8 @@ store3=["White","Black","Native American","Asian","Native Hawaiian","Other"]
 // raceOther=totalpopulation-sumstore
 // console.log(raceOther)
 // store.push(raceOther);
-var width2 = 960,
-    height2 = 500,
+var width2 = 480,
+    height2 = 400,
     radius = Math.min(width2, height2) / 2;
 var color = d3.scale.ordinal()
     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
@@ -495,16 +523,16 @@ var arc = d3.svg.arc()
 
 var pie = d3.layout.pie()
     .sort(null)
-    .value(function(store) { return store; });
+    .value(function(store4) { return store4[1]; });
 // var svg1 = d3.select("body").append("svg")
 //     .attr("width", width1)
 //     .attr("height", 50)
 //     .attr("class", "background1");
 console.log("body")
 console.log(store)
-var svg2 = d3.select("body")
-.data(pie(store))
-.append("svg")
+var svg2 = d3.select(".background1")
+.data(pie(store4))
+.append("svg").attr("x", width2)
     .attr("width", width2)
     .attr("height", height2)
   .append("g")
@@ -514,7 +542,7 @@ var svg2 = d3.select("body")
 //     var divide= maxstore/(height-30)
 //     console.log(divide)
  var g2 =svg2.selectAll(".arc")
-      .data(pie(store))
+      .data(pie(store4))
     .enter().append("g")
       .attr("class", "arc");
        g2.append("path")
@@ -522,19 +550,29 @@ var svg2 = d3.select("body")
       .style("fill", function(d) { console.log(color(d.data));return color(d.data); });
 
 g2.append("text")
-      .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+      .attr("transform", function(d) { return "translate(" + arc.centroid(d).map(function(x) { return x * 2; }) + ")"; })
       .attr("dy", ".35em")
+      .attr("font-family", "sans-serif")
+               .attr("font-size", "10px")
       .style("text-anchor", "middle")
-      .text(function(d) { console.log(d);return d.data; });
+      .text(function(d) { console.log(d);return d.data[0]; });
+g2.append("text")
+      .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
+      .attr("x", width2 / 2-250)
+      .attr("y", 130)
+      .attr("font-family", "sans-serif")
+               .attr("font-size", "10px")
+      .style("text-anchor", "left")
+      .text(function(d) {return d.data[0]; });
 g2.append("text")
       .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
       // .attr("dy", ".35em")
-      .attr("x", width1 / 2-50)
-      .attr("y", 100).
-      attr("font-family", "sans-serif")
-               .attr("font-size", "20px")
-      .style("text-anchor", "middle")
-      .text(function(d) {return d.data; });
+      .attr("x", width2 / 2-50)
+      .attr("y", 130)
+      .attr("font-family", "sans-serif")
+               .attr("font-size", "10px")
+      .style("text-anchor", "left")
+      .text(function(d) {return d.data[1]; });
 // chart.append("text")
 //       .attr("x", width1 / 2-200)
 //       .attr("y", 0).attr("font-family", "sans-serif")
