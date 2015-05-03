@@ -131,7 +131,6 @@ queue()
  .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
     .await(testReady2);
 
-    //.defer(d3.json, "data/us-congress-108.json")
 var year=2;
 console.log(year)
   d3.selectAll("input").each(function(d) {  
@@ -287,7 +286,8 @@ function testReady2(error, us, info, congress, rep, meta,stateId) {
         .text(function(d) { return d.id; });
     
     function clicked(d) {
-if(year==2){console.log(year)
+       $(".background1").wrapAll().remove();
+if(year==2){
 console.log(d.id)
 data2=[]
     meta.forEach(function(d,i) { 
@@ -348,7 +348,7 @@ data2=[]
         {
           idState=(d.id).toString()
         }
-        // console.log(info)
+         console.log(info)
         console.log(congress)
         console.log(congress["objects"]["districts"]["geometries"].length)
          console.log(store)
@@ -362,18 +362,7 @@ data2=[]
         console.log(d.id)
 for(var j=0;j<congress["objects"]["districts"]["geometries"].length;j++){
 if(congress["objects"]["districts"]["geometries"][j]["id"]===d.id){
- //            {
- // // for(var i=3;i<21;i++){
- //                  if(i<10)
- //        {
- //          i="0"+i.toString()
- //        }
- //        else
- //        {
- //          i=i.toString()
- //        }console.log(i)             
-                    // if(info[j]["HC02_EST_VC0"+i.toString()]){
-                      // console.log(congress["objects"]["districts"]["geometries"][j]["properties"]["DP0080003"])
+
                       for(var i=3;i<7;i++){
                     store.push((congress["objects"]["districts"]["geometries"][j]["properties"]["DP008000"+i.toString()]))
                   }
@@ -416,30 +405,7 @@ for(var j=0;j<info.length;j++){
 }
 console.log(store2)
 console.log(store)
-// for(var j=0;j<info.length;j++){
-//           if(parseInt(info[j]["GEOID"].substring(7,11), 10)==d.id)
-//             {
-//               if(info[j]["TBLID"]=="P002"){
-//                 for(var i=2;i<8;i++){
-//                   if(info[j]["ORDER"]==i){
-//                     store.push(info[j]["EST"])
-//                   }
-//                 }
-//               }
-//               if(info[j]["TBLID"]=="P004"){
-//                 for(var i=3;i<26;i++){
-//                   if(info[j]["ORDER"]==i){
-//                     store2.push(info[j]["EST"])
-//                   }
-//                 }
-//                 for(var i=27;i<48;i++){
-//                   if(info[j]["ORDER"]==i){
-//                     store2.push(info[j]["EST"])
-//                   }
-//                 }
-//               }
-//             }
-//         }
+
 if(store2.length!==0){
 var width1 = 960
 var height1 = 400
@@ -490,7 +456,7 @@ svg1.select(".y.axis")
       .attr("x", 0)
       .attr("y", height1-30)
       .attr("dy", ".75em")
-      .text(function(d,i) {return data2[i].toString()})
+      .text(function(d,i) {if(i<18){return i*5}else{return (i-18)*5}})
                .attr("font-size", "7px").style("text-anchor", "left");
                
                chart.append("text")
@@ -600,7 +566,6 @@ g2.append("text")
   }
 
     function reset() {
-if(year==1){
       $(".background1").wrapAll().remove();
       active.classed("active", false);
       active = d3.select(null);
@@ -608,16 +573,7 @@ if(year==1){
           .duration(750)
           .style("stroke-width", "1.5px")
           .attr("transform", "");
-    }
-    if(year==2){
-      $(".background1").wrapAll().remove();
-      active.classed("active", false);
-      active = d3.select(null);
-      g.transition()
-          .duration(750)
-          .style("stroke-width", "1.5px")
-          .attr("transform", "");
-    }
+    
   }
 }
 
@@ -741,6 +697,7 @@ function testReady(error, us, info, congress, rep, meta,stateId) {
         .text(function(d) { return d.id; });
     
     function clicked(d) {if(year==1){console.log(year)
+       $(".background1").wrapAll().remove();
 console.log(d.id)
 data2=[]
     meta.forEach(function(d,i) { 
@@ -1205,7 +1162,7 @@ g2.append("text")
   }
 
     function reset() {
-if(year==1){
+
       $(".background1").wrapAll().remove();
       active.classed("active", false);
       active = d3.select(null);
@@ -1213,8 +1170,7 @@ if(year==1){
           .duration(750)
           .style("stroke-width", "1.5px")
           .attr("transform", "");
-    }
-    if(year==2){
+
       $(".background1").wrapAll().remove();
       active.classed("active", false);
       active = d3.select(null);
@@ -1222,7 +1178,7 @@ if(year==1){
           .duration(750)
           .style("stroke-width", "1.5px")
           .attr("transform", "");
-    }
+    
   }
 }
 
