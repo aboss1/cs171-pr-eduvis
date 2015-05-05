@@ -117,15 +117,17 @@ font-family: "Lucida Grande", Tahoma;
  <form class = "shift"> 
   <!-- <b>Time</b>: 2003<input type="range" name="points" min="1" max="2" step="1" value="2" id="slider-time" oninput=";">2011<br></form> -->
     <br>
-    <label><input type="radio" name="layout" value="popgdp" checked>108th Congress(2000 Census)</label>
-    <label><input type="radio" name="layout" value="longlati" >111th Congress(2010 Census)</label>
+    <label><input type="radio" name="layout" value="popgdp" >108th Congress(2000 Census)</label>
+    <label><input type="radio" name="layout" value="longlati" checked >111th Congress(2010 Census)</label>
     <br>
 
  <div id="results"></div>
   <script>
   d3.select("input[value=\"popgdp\"]").on("click",line_layout_scatter );
 d3.select("input[value=\"longlati\"]").on("click",line_layout_latitude );
+var year=2
 function line_layout_scatter() {
+  year=1
   console.log("yead")  
    $("svg").wrapAll().remove();
         queue()
@@ -140,6 +142,7 @@ function line_layout_scatter() {
 
 //make the circle sorted by population
 function line_layout_latitude () {
+  year=2
   console.log("yead")
   $("svg").wrapAll().remove(); 
         queue()
@@ -166,26 +169,26 @@ var projection = d3.geo.albersUsa()
 var path = d3.geo.path()
     .projection(projection);
   
-// queue()
-//             .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-//   .defer(d3.csv, "takehirodata/ACS_10_1YR_S0101/ACS_10_1YR_S0101_with_ann.csv")
-//   .defer(d3.json, "data/us-congress-111.json")
-//   .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
-//  .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
-//  .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
-//     .await(testReady2);
-
-
-        queue()
+queue()
             .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-  .defer(d3.csv, "takehirodata/ACS_2003_500/ACS_2003_500.csv")
-  .defer(d3.json, "data/us-congress-108.json")
+  .defer(d3.csv, "takehirodata/ACS_10_1YR_S0101/ACS_10_1YR_S0101_with_ann.csv")
+  .defer(d3.json, "data/us-congress-111.json")
   .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
  .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
  .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
- .await(testReady);
+    .await(testReady2);
 
-var year=2;
+
+ //        queue()
+ //            .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+ //  .defer(d3.csv, "takehirodata/ACS_2003_500/ACS_2003_500.csv")
+ //  .defer(d3.json, "data/us-congress-108.json")
+ //  .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+ // .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
+ // .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
+ // .await(testReady);
+
+// var year=2;
 console.log(year)
   
 
