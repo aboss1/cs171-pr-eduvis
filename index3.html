@@ -3,6 +3,9 @@
 <meta charset="utf-8">
 <head>
 <style>
+.y.axis path {
+  display: none;
+}
 body{
 font-family: "Lucida Grande", Tahoma;
   font-size: 10px;
@@ -450,14 +453,20 @@ svg1.select(".y.axis")
       .attr("height", function(d) {
     return (yScale(0) - yScale(d));
    })
-      .attr("width", barWidth - 1);}
+      .attr("width", barWidth - 1)
+            .style("fill", function(d, i) {
+        if(i<18)
+          return "#add8e6";
+        else
+          return "#f28abf";
+      });}
 
   bar.append("text")
       .attr("x", 0)
       .attr("y", height1-30)
       .attr("dy", ".75em")
       .text(function(d,i) {if(i<18){return i*5}else{return (i-18)*5}})
-               .attr("font-size", "7px").style("text-anchor", "left");
+               .attr("font-size", "7px").style("letter-spacing", "0");
                
                chart.append("text")
       .attr("x", 100)
@@ -815,15 +824,20 @@ svg1.select(".y.axis")
       .attr("height", function(d) {
     return (yScale(0) - yScale(d));
    })
-      .attr("width", barWidth - 1);}
+      .attr("width", barWidth - 1)
+            .style("fill", function(d, i) {
+        if(i<22)
+          return "#add8e6";
+        else
+          return "#f28abf";
+      });}
 
   bar.append("text")
       .attr("x", 0)
       .attr("y", height1-30)
       .attr("dy", ".75em")
       .text(function(d,i) {return data2[i].toString()})
-               .attr("font-size", "7px").style("text-anchor", "left");
-               
+               .attr("font-size", "7px").style("letter-spacing", "0");//.style("text-anchor", "left");
                chart.append("text")
       .attr("x", 100)
       .attr("y", height1)
@@ -903,13 +917,13 @@ var svg2 = d3.select(".background1")
       .style("fill", function(d) { return color(d.data); });
 
 g2.append("text")
-      .attr("transform", function(d) { return "translate(" + arc.centroid(d).map(function(x) { return x * 2; }) + ")"; })
+      .attr("transform", function(d) { return "translate(" + arc.centroid(d).map(function(x) { return x*2; }) + ")"; })
       .attr("dy", ".35em")
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
       .style("text-anchor", "middle")
       .text(function(d) { return d.data[0]; });
-g2.append("text")
+/*g2.append("text")
       .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
       .attr("x", width2 / 2-250)
       .attr("y", 130)
@@ -924,7 +938,7 @@ g2.append("text")
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
       .style("text-anchor", "left")
-      .text(function(d) {return d.data[1]; });
+      .text(function(d) {return d.data[1]; });*/
     }
 
 }
@@ -1133,7 +1147,7 @@ var svg2 = d3.select(".background1")
       .attr("d", arc)
       .style("fill", function(d) { return color(d.data); });
 
-g2.append("text")
+/*g2.append("text")
       .attr("transform", function(d) { return "translate(" + arc.centroid(d).map(function(x) { return x * 2; }) + ")"; })
       .attr("dy", ".35em")
       .attr("font-family", "sans-serif")
@@ -1155,7 +1169,7 @@ g2.append("text")
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
       .style("text-anchor", "left")
-      .text(function(d) {return d.data[1]; });
+      .text(function(d) {return d.data[1]; });*/
     }
     
 }

@@ -3,6 +3,9 @@
 <meta charset="utf-8">
 <head>
 <style>
+.y.axis path {
+  display: none;
+}
 body{
 font-family: "Lucida Grande", Tahoma;
   font-size: 10px;
@@ -170,6 +173,8 @@ console.log(year)
 var modifiedData = [];
 
 function testReady(error, us, info, congress, rep, meta,stateId) {
+
+
   var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
@@ -197,6 +202,7 @@ function testReady(error, us, info, congress, rep, meta,stateId) {
   svg.call(tip);
 
   var districts = congress.objects.districts.geometries;
+
   for (var c = 0; c<districts.length; c++){
     var newModifiedData = {};
     for (var s = 0; s<stateId.length; s++){
@@ -412,8 +418,8 @@ svg1.select(".y.axis")
       .attr("x", 0)
       .attr("y", height1-30)
       .attr("dy", ".75em")
-      .text(function(d,i) {return data2[i].toString()})
-               .attr("font-size", "7px").style("text-anchor", "left");
+      .text(function(d,i) {console.log(data2[i]); return data2[i].toString()})
+               .attr("font-size", "5px").style("text-anchor", "left");
                
                chart.append("text")
       .attr("x", 100)
@@ -637,7 +643,13 @@ svg1.select(".y.axis")
       .attr("height", function(d) {
     return (yScale(0) - yScale(d));
    })
-      .attr("width", barWidth - 1);}
+      .attr("width", barWidth - 1)
+      .style("fill", function(d, i) {
+        if(i<23)
+          return "#add8e6";
+        else
+          return "#f28abf";
+      });}
 
   bar.append("text")
       .attr("x", 0)
