@@ -71,6 +71,7 @@ font-family: "Lucida Grande", Tahoma;
   stroke-width: 1.5px;
 }
 .d3-tip {
+  margin: 30px 0 0px 0;
   opacity: .6;
   line-height: 1;
   font-weight: bold;
@@ -100,6 +101,10 @@ font-family: "Lucida Grande", Tahoma;
   left: 0;
 }
 
+.shift{
+  margin: 0px 0 100px 0;
+}
+
 </style>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/queue.v1.min.js"></script>
@@ -109,10 +114,10 @@ font-family: "Lucida Grande", Tahoma;
 </head>
 <body>
 
- <form> 
+ <form class = "shift"> 
   <!-- <b>Time</b>: 2003<input type="range" name="points" min="1" max="2" step="1" value="2" id="slider-time" oninput=";">2011<br></form> -->
     <br>
-    <label><input type="radio" name="layout" value="popgdp" >108th Congress(2000 Census)</label>
+    <label><input type="radio" name="layout" value="popgdp" checked>108th Congress(2000 Census)</label>
     <label><input type="radio" name="layout" value="longlati" >111th Congress(2010 Census)</label>
     <br>
 
@@ -561,13 +566,13 @@ var svg2 = d3.select(".background1")
       .attr("d", arc)
       .style("fill", function(d) { return color(d.data); });
 
-g2.append("text")
+/*g2.append("text")
       .attr("transform", function(d) { console.log(arc.centroid(d));return "translate(" + arc.centroid(d).map(function(x) { return x * 2; }) + ")"; })
       .attr("dy", ".35em")
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
       .style("text-anchor", "middle")
-      .text(function(d) { return d.data[0]; });
+      .text(function(d) { return d.data[0]; });*/
 g2.append("text")
       .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
       .attr("x", -65)
@@ -957,14 +962,14 @@ var svg2 = d3.select(".background1")
       .attr("d", arc)
       .style("fill", function(d) { return color(d.data); });
 
-g2.append("text")
+/*g2.append("text")
       .attr("transform", function(d) { return "translate(" + arc.centroid(d).map(function(x) { return x*2; }) + ")"; })
       .attr("dy", ".35em")
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
       .style("text-anchor", "middle")
-      .text(function(d) { return d.data[0]; });
-g2.append("text")
+      .text(function(d) { return d.data[0]; });*/
+/*g2.append("text")
       .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
       .attr("x", width2 / 2-250)
       .attr("y", 60)
@@ -979,7 +984,7 @@ g2.append("text")
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
       .style("text-anchor", "left")
-      .text(function(d) {return d.data[1]; });
+      .text(function(d) {return d.data[1]; });*/
     }
 
 }
@@ -1106,7 +1111,7 @@ svg1.select(".y.axis")
       .attr("width", barWidth - 1)
       .attr("width", barWidth - 1)
             .style("fill", function(d, i) {
-        if(i<23)
+        if(i<22)
           return "#add8e6";
         else
           return "#f28abf";
@@ -1199,13 +1204,13 @@ var svg2 = d3.select(".background1")
       .attr("d", arc)
       .style("fill", function(d) { return color(d.data); });
 
-g2.append("text")
+/*g2.append("text")
       .attr("transform", function(d) { return "translate(" + arc.centroid(d).map(function(x) { return x * 2; }) + ")"; })
       .attr("dy", ".35em")
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
       .style("text-anchor", "middle")
-      .text(function(d) { return d.data[0]; });
+      .text(function(d) { return d.data[0]; });*/
 g2.append("text")
       .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
       .attr("x", -65)
