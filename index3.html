@@ -99,6 +99,7 @@ font-family: "Lucida Grande", Tahoma;
   top: 100%;
   left: 0;
 }
+
 </style>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/queue.v1.min.js"></script>
@@ -108,10 +109,46 @@ font-family: "Lucida Grande", Tahoma;
 </head>
 <body>
 
- <form> <b>Time</b>: 2003<input type="range" name="points" min="1" max="2" step="1" value="2" id="slider-time" oninput=";">2011<br></form>
+ <form> 
+  <!-- <b>Time</b>: 2003<input type="range" name="points" min="1" max="2" step="1" value="2" id="slider-time" oninput=";">2011<br></form> -->
+    <br>
+    Scatter Plot:
+    <label><input type="radio" name="layout" value="popgdp" >108th Congress(2000 Census)</label>
+    <label><input type="radio" name="layout" value="longlati" >111th Congress(2010 Census)</label>
+    <br>
 
  <div id="results"></div>
   <script>
+  d3.select("input[value=\"popgdp\"]").on("click",line_layout_scatter );
+d3.select("input[value=\"longlati\"]").on("click",line_layout_latitude );
+function line_layout_scatter() {
+  console.log("yead")  
+   $("svg").wrapAll().remove();
+        queue()
+            .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+  .defer(d3.csv, "takehirodata/ACS_2003_500/ACS_2003_500.csv")
+  .defer(d3.json, "data/us-congress-108.json")
+  .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+ .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
+ .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
+ .await(testReady);
+}
+
+//make the circle sorted by population
+function line_layout_latitude () {
+  console.log("yead")
+  $("svg").wrapAll().remove(); 
+        queue()
+            .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+  .defer(d3.csv, "takehirodata/ACS_10_1YR_S0101/ACS_10_1YR_S0101_with_ann.csv")
+  .defer(d3.json, "data/us-congress-111.json")
+  .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+ .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
+ .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
+    .await(testReady2);
+  //delete the effect of mouseover
+    
+}
  var currRep = "None";
  var currParty = "None";
  var currImage;
@@ -125,24 +162,16 @@ var projection = d3.geo.albersUsa()
 var path = d3.geo.path()
     .projection(projection);
   
-queue()
-            .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-  .defer(d3.csv, "takehirodata/ACS_10_1YR_S0101/ACS_10_1YR_S0101_with_ann.csv")
-  .defer(d3.json, "data/us-congress-111.json")
-  .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
- .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
- .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
-    .await(testReady2);
+// queue()
+//             .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+//   .defer(d3.csv, "takehirodata/ACS_10_1YR_S0101/ACS_10_1YR_S0101_with_ann.csv")
+//   .defer(d3.json, "data/us-congress-111.json")
+//   .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+//  .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
+//  .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
+//     .await(testReady2);
 
-var year=2;
-console.log(year)
-  d3.selectAll("input").each(function(d) {  
-    if(d3.select(this).attr("type") === "range"){
-     d3.select(this).on("input", function(e){
-      year = document.getElementById("slider-time").value;
 
-      if(year == 1){
-        $("svg").wrapAll().remove();
         queue()
             .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
   .defer(d3.csv, "takehirodata/ACS_2003_500/ACS_2003_500.csv")
@@ -151,22 +180,10 @@ console.log(year)
  .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
  .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
  .await(testReady);
-        
-      }
-      else if(year == 2)
-      {$("svg").wrapAll().remove(); 
-        queue()
-            .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-  .defer(d3.csv, "takehirodata/ACS_10_1YR_S0101_with_ann_.csv")
-  .defer(d3.json, "data/us-congress-111.json")
-  .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
- .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
- .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
-    .await(testReady2);
-          }
-     })
-      }
-  })
+
+var year=2;
+console.log(year)
+  
 
 var modifiedData = [];
 function testReady2(error, us, info, congress, rep, meta,stateId) {
@@ -178,27 +195,15 @@ function testReady2(error, us, info, congress, rep, meta,stateId) {
     .attr("width", width)
     .attr("height", height)
     .on("click", reset);
-   if(info[0]["EST"]==267987){console.log("true")}
-    if(info[0]["ORDER"]==1){console.log("true")}
+  
 
   var tip = d3.tip()
     .attr('class', 'd3-tip')
     .offset([-10, 0])
     .html(function(d) {
-//       var mouse = {x: 0, y: 0};
-//       var mousex
-//       var mousey
-// document.addEventListener('mousemove', function(e){ 
-//     mouse.x = e.clientX || e.pageX; 
-//     mouse.y = e.clientY || e.pageY 
-// mousex=mouse.x
-// mousey=mouse.y 
-// }, false);
-// console.log(mouse)
-// console.log(mousex)
-// console.log(mousey)
+
       var repre = searchMember(d.id);
-console.log(d.top)
+
       return "<span style='color:white' class='large'>" + 
               repre.person.firstname + " " + repre.person.lastname + "</span><br>" 
               + "<span style='color:white'>" + repre.party + "</span><br>"
@@ -246,8 +251,7 @@ console.log(d.top)
     cong = 113;
   }
   function searchMember(givenID){
-    //for (var m = 0; m< modifiedData.length; m++){
-      //if (givenID == modifiedData[m].fullId){
+ 
           for (r = 0; r<rep.objects.length; r++){
             oneRep = rep.objects[r];
             if(oneRep.congress_numbers!=null){
@@ -264,11 +268,7 @@ console.log(d.top)
             }
           }
           return 1;
-        //var rep = load(modifiedData[m].ocdID);
-        //break;
-      //}
-    //}
-    //return rep;
+        
   }
 
   var g = svg.append("g")
@@ -534,7 +534,8 @@ var width2 = 480,
     height2 = 400,
     radius = Math.min(width2, height2) / 2;
 var color = d3.scale.ordinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b"]);
+   .range(["#8dd3c7", "#ffffb3", "#bebada", "#fb8072"]);
+   // .range([ "#7FDBFF", "#39CCCC", "#FFDC00", "#FF4136"])
 var arc = d3.svg.arc()
     .outerRadius(radius - 10)
     .innerRadius(0);
@@ -570,15 +571,41 @@ g2.append("text")
       .text(function(d) { return d.data[0]; });
 g2.append("text")
       .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
-      .attr("x", width2 / 2-250)
+      .attr("x", -65)
       .attr("y", 80)
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
       .style("text-anchor", "left")
       .text(function(d) {return d.data[0]; });
+      // .range(["#8dd3c7", "#ffffb3", "#bebada", "#fb8072"]);
+g2.append("rect")
+    .attr("width", 40)
+    .attr("height", 15) 
+    .attr("x", 185)
+      .attr("y", 90)
+      .style("fill","#ffffb3" );
+g2.append("rect")
+    .attr("width", 40)
+    .attr("height", 15) 
+    .attr("x", 185)
+      .attr("y", 110) 
+      .style("fill","#bebada" );
+g2.append("rect")
+    .attr("width", 40)
+    .attr("height", 15) 
+    .attr("x", 185)
+      .attr("y", 130)
+      .style("fill","#fb8072" );
+
+g2.append("rect")
+    .attr("width", 40)
+    .attr("height", 15) 
+    .attr("x", 185)
+      .attr("y", 70)
+.style("fill","#8dd3c7" );
 g2.append("text")
       .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
-      .attr("x", width2 / 2-50)
+      .attr("x", 120)
       .attr("y", 80)
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
@@ -1136,8 +1163,10 @@ var store4 = store3.map(function (e, i) {
 var width2 = 480,
     height2 = 400,
     radius = Math.min(width2, height2) / 2;
+
+
 var color = d3.scale.ordinal()
-    .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+    .range(["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#d0743c", "#fdb462"]);
 var arc = d3.svg.arc()
     .outerRadius(radius - 10)
     .innerRadius(0);
@@ -1164,7 +1193,7 @@ var svg2 = d3.select(".background1")
       .attr("d", arc)
       .style("fill", function(d) { return color(d.data); });
 
-/*g2.append("text")
+g2.append("text")
       .attr("transform", function(d) { return "translate(" + arc.centroid(d).map(function(x) { return x * 2; }) + ")"; })
       .attr("dy", ".35em")
       .attr("font-family", "sans-serif")
@@ -1173,20 +1202,57 @@ var svg2 = d3.select(".background1")
       .text(function(d) { return d.data[0]; });
 g2.append("text")
       .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
-      .attr("x", width2 / 2-250)
-      .attr("y", 130)
+      .attr("x", -65)
+      .attr("y", 85)
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
       .style("text-anchor", "left")
       .text(function(d) {return d.data[0]; });
 g2.append("text")
       .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
-      .attr("x", width2 / 2-50)
-      .attr("y", 130)
+      .attr("x", 100)
+      .attr("y", 85)
       .attr("font-family", "sans-serif")
                .attr("font-size", "10px")
       .style("text-anchor", "left")
-      .text(function(d) {return d.data[1]; });*/
+      .text(function(d) {return d.data[1]; });
+g2.append("rect")
+    .attr("width", 40)
+    .attr("height", 15) 
+    .attr("x", 185)
+      .attr("y", 95)
+      .style("fill","#ffffb3" );
+g2.append("rect")
+    .attr("width", 40)
+    .attr("height", 15) 
+    .attr("x", 185)
+      .attr("y", 115) 
+      .style("fill","#bebada" );
+g2.append("rect")
+    .attr("width", 40)
+    .attr("height", 15) 
+    .attr("x", 185)
+      .attr("y", 135)
+      .style("fill","#fb8072" );
+      g2.append("rect")
+    .attr("width", 40)
+    .attr("height", 15) 
+    .attr("x", 185)
+      .attr("y", 155)
+      .style("fill","#80b1d3" );
+g2.append("rect")
+    .attr("width", 40)
+    .attr("height", 15) 
+    .attr("x", 185)
+      .attr("y", 175)
+      .style("fill","#fdb462" );
+g2.append("rect")
+    .attr("width", 40)
+    .attr("height", 15) 
+    .attr("x", 185)
+      .attr("y", 75)
+.style("fill","#8dd3c7" );
+
     }
     
 }
