@@ -104,7 +104,44 @@
   .shift{
     margin: 0px 0 100px 0;
   }
+.hot-container p { 
+	margin-top: 10px; 
+  }
+ a { 
+	text-decoration: none; margin: 0 10px; 
+}
 
+.hot-container {
+	min-height: 100px;
+	margin-top: 100px;
+	width: 100%;
+	text-align: center;
+}
+
+a.btn {
+	display: inline-block;
+	color: #666;
+	background-color: #eee;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-size: 12px;
+	padding: 10px 30px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border: 1px solid rgba(0,0,0,0.3);
+	border-bottom-width: 3px;
+}
+
+	a.btn:hover {
+		background-color: #e3e3e3;
+		border-color: rgba(0,0,0,0.5);
+	}
+	
+	a.btn:active {
+		background-color: #CCC;
+		border-color: rgba(0,0,0,0.9);
+	}
   </style>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="http://d3js.org/queue.v1.min.js"></script>
@@ -119,7 +156,7 @@
   <br>
   <label><input type="radio" name="layout" value="popgdp" >108th Congress(2000 Census)</label>
   <label><input type="radio" name="layout" value="longlati" checked >111th Congress(2010 Census)</label>
-  <button type="button"><a href="about.html">About PolitiVis</a></button>
+ 	<a href="about.html" class="btn">About PolitiVis</a>
   <br>
 
   <div id="results"></div>
