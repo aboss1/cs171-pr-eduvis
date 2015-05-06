@@ -167,13 +167,13 @@
   .projection(projection);
   
   queue()
-  .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
-  .defer(d3.csv, "takehirodata/ACS_2003_500/ACS_2003_500.csv")
-  .defer(d3.json, "data/us-congress-108.json")
-  .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
-  .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
-  .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
-  .await(testReady);
+    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+    .defer(d3.csv, "takehirodata/ACS_10_1YR_S0101/ACS_10_1YR_S0101_with_ann.csv")
+    .defer(d3.json, "data/us-congress-111.json")
+    .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+    .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
+    .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
+    .await(testReady2);
 
   var modifiedData = [];
   function testReady2(error, us, info, congress, rep, meta,stateId) {
