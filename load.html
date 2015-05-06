@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <style>
+  .y.axis path {
+    display: none;
+  }
+  body{
+    font-family: "Lucida Grande", Tahoma;
+    font-size: 10px;
+    font-weight: lighter;
+    font-variant: normal;
+    text-transform: uppercase;
+    color: #666666;
+    margin-top: 10px;
+    text-align: center!important;
+    letter-spacing: 0.3em;
+  }
+  .large{
+    font-family: "Lucida Grande", Tahoma;
+    font-size: 14px;
+    font-weight: lighter;
+    font-variant: normal;
+    text-transform: uppercase;
+    color: #666666;
+    margin-top: 10px;
+    text-align: center!important;
+    letter-spacing: 0.3em;
+  }
+  #circle{
+    width: 100px;
+    height: 120px;
+    border-radius: 50px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+  }
+  .background {
+    fill: none;
+    pointer-events: all;
+  }
+  .feature {
+    fill: #bbb;
+    cursor: pointer;
+  }
+  .feature.active {
+    fill: orange;
+  }
+  .mesh {
+    fill: none;
+    stroke: #fff;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .districts {
+    fill: #bbb;
+  }
+  .districts :hover {
+    fill: orange;
+  }
+  .district-boundaries {
+    pointer-events: none;
+    fill: none;
+    stroke: #fff;
+    stroke-width: .5px;
+  }
+  .state-boundaries {
+    pointer-events: none;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+  .d3-tip {
+    margin: 30px 0 0px 0;
+    opacity: .6;
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: gray;
+    color: #fff;
+    border-radius: 2px;
+  }
+  /* Creates a small triangle extender for the tooltip */
+  .d3-tip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: gray;
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+  }
+  /* Style northward tooltips differently */
+  .d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+  }
+  .shift{
+    margin: 0px 0 100px 0;
+  }
+.hot-container p { 
+	margin-top: 10px; 
+  }
+ a { 
+	text-decoration: none; margin: 0 10px; 
+}
+.hot-container {
+	min-height: 100px;
+	margin-top: 100px;
+	width: 100%;
+	text-align: center;
+}
+a.btn {
+	display: inline-block;
+	color: #666;
+	background-color: #eee;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-size: 12px;
+	padding: 10px 30px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border: 1px solid rgba(0,0,0,0.3);
+	border-bottom-width: 3px;
+}
+	a.btn:hover {
+		background-color: #e3e3e3;
+		border-color: rgba(0,0,0,0.5);
+	}
+	
+	a.btn:active {
+		background-color: #CCC;
+		border-color: rgba(0,0,0,0.9);
+	}
+  </style>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://d3js.org/queue.v1.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
+  <script src="http://d3js.org/topojson.v1.min.js"></script>
+</head>
+<body>
+
+ <form class = "shift"> 
+
+  <br>
+  <label><input type="radio" name="layout" value="popgdp" >108th Congress(2000 Census)</label>
+  <label><input type="radio" name="layout" value="longlati" checked >111th Congress(2010 Census)</label>
+ 	<a href="index.html" class="btn">About PolitiVis</a>
+  <br>
+
+  <div id="results"></div>
+  <script>
+  d3.select("input[value=\"popgdp\"]").on("click",line_layout_scatter );
+  d3.select("input[value=\"longlati\"]").on("click",line_layout_latitude );
+  var year=2
+  function line_layout_scatter() {
+    year=1 
+    $("svg").wrapAll().remove();
+    queue()
+    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+    .defer(d3.csv, "takehirodata/ACS_2003_500/ACS_2003_500.csv")
+    .defer(d3.json, "data/us-congress-108.json")
+    .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+    .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
+    .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
+    .await(testReady);
+  }
+  function line_layout_latitude () {
+    year=2
+    $("svg").wrapAll().remove(); 
+    queue()
+    .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+    .defer(d3.csv, "takehirodata/ACS_10_1YR_S0101/ACS_10_1YR_S0101_with_ann.csv")
+    .defer(d3.json, "data/us-congress-111.json")
+    .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+    .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
+    .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
+    .await(testReady2);
+    
+  }
+  var currRep = "None";
+  var currParty = "None";
+  var currImage;
+  var width = 960,
+  height = 600,
+  active = d3.select(null);
+  var projection = d3.geo.albersUsa()
+  .scale(1280)
+  .translate([width / 2, height / 2]);
+  var path = d3.geo.path()
+  .projection(projection);
+  
+  queue()
+  .defer(d3.json, "https://gist.githubusercontent.com/mbostock/4090846/raw/c899e3d4f3353924e495667c842f54a07090cfab/us.json")
+  .defer(d3.csv, "takehirodata/ACS_10_1YR_S0101/ACS_10_1YR_S0101_with_ann.csv")
+  .defer(d3.json, "data/us-congress-111.json")
+  .defer(d3.json, "https://www.govtrack.us/api/v2/role?limit=6000")
+  .defer(d3.tsv,"takehirodata/ACS_2003_META.txt")
+  .defer(d3.tsv, "https://gist.githubusercontent.com/mbostock/4090846/raw/3f0d8f1df485eec60d8cc75f8575e7e55f569904/us-state-names.tsv")
+  .await(testReady2);
+  var modifiedData = [];
+  function testReady2(error, us, info, congress, rep, meta,stateId) {
+    var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+    svg.append("rect")
+    .attr("class", "background")
+    .attr("width", width)
+    .attr("height", height)
+    .on("click", reset);
+    var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+      var repre = searchMember(d.id);
+      return "<span style='color:white' class='large'>" + 
+      repre.person.firstname + " " + repre.person.lastname + "</span><br>" 
+      + "<span style='color:white'>" + repre.party + "</span><br>"
+      + "<img src = '" + "https://theunitedstates.io/images/congress/original/"+ repre.person.bioguideid + ".jpg" + "'alt = 'No Image' id = 'circle'/>";
+    })
+    svg.call(tip);
+    var districts = congress.objects.districts.geometries;
+    for (var c = 0; c<districts.length; c++){
+      var newModifiedData = {};
+      for (var s = 0; s<stateId.length; s++){
+        var stateID = districts[c].id.toString();
+        var districtID = districts[c].id.toString();
+        stateID = stateID.substring(0, stateID.length - 2);
+        districtID = districtID.slice(-2);
+        if (stateID == stateId[s].id){
+          newModifiedData.districtId = parseInt(districtID, 10);
+          newModifiedData.stateAbbrev = stateId[s].code.toLowerCase();
+          newModifiedData.stateId = stateID;
+          newModifiedData.fullId = districts[c].id;
+          newModifiedData.stateName = stateId[s].name;
+          newModifiedData.ocdID = "ocd-division/country:us/state:" + newModifiedData.stateAbbrev + "/cd:" 
+          + newModifiedData.districtId;
+          modifiedData.push(newModifiedData);
+        }
+      }
+    }
+    function searchModified(givenID){
+      for (m = 0; m <modifiedData.length; m++){
+        if(givenID == modifiedData[m].fullId){
+          return modifiedData[m].stateAbbrev;
+        }
+      }
+    }
+    var cong = 108;
+    if(year == 1){
+      cong = 108;
+    }
+    else if(year == 2){
+      cong = 111;
+    }
+    else if(year == 3){
+      cong = 113;
+    }
+    function searchMember(givenID){
+      for (r = 0; r<rep.objects.length; r++){
+        oneRep = rep.objects[r];
+        if(oneRep.congress_numbers!=null){
+          for(y = 0; y<oneRep.congress_numbers.length; y++){
+            if(oneRep.congress_numbers[y] == cong){
+              var state = searchModified(givenID).toUpperCase();
+              var disID = parseInt(givenID.toString().slice(-2), 10);
+              if(state == oneRep.state && disID == oneRep.district){
+                return oneRep;
+                break;
+              }
+            }
+          }
+        }
+      }
+      return 1;
+    }
+    var g = svg.append("g")
+    .style("stroke-width", "1.5px");
+    g.selectAll("path")
+    .data(topojson.feature(congress, congress.objects.districts).features)
+    .enter().append("path")
+    .attr("d", path)
+    .attr("class", "feature")
+    .style("fill", function(d){
+      var per = searchMember(d.id);
+      if (per.party == "Republican")
+        return "#ff4c4c";
+      else if(per.party == "Democrat")
+        return "#5591e5";
+    })
+    .on("click", clicked)
+    .on("mouseover", tip.show)
+    .on("mouseout", tip.hide);
+    g.append("path")
+    .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+    .attr("class", "mesh")
+    .attr("d", path);
+    g.append("path")
+    .attr("class", "district-boundaries")
+    .datum(topojson.mesh(congress, congress.objects.districts, function(a, b) { return a !== b && (a.id / 1000 | 0) === (b.id / 1000 | 0); }))
+    .attr("d", path).append("title")
+    .text(function(d) { return d.id; });
+    
+    function clicked(d) {
+      $(".background1").wrapAll().remove();
+      $(".y axis").wrapAll().remove();
+      data2=[]
+      meta.forEach(function(d,i) { 
+       if(meta[i]["TBLID#ORDER#STUB"].substring(0, 4)=="P004")
+       {
+        data2.push(meta[i]["TBLID#ORDER#STUB"].substring(7,10))
+      }
+    });
+      data2.splice(0, 1);
+      data2.forEach(function(d,j) { 
+        if(data2[j].indexOf("#")==0)
+        {
+          data2[j]=data2[j].substring(1,3)
+        }
+      });
+      data2.splice(0, 3);
+      data2.splice(22, 2);
+      data2[0]=data2[0].substring(0,2)
+      data2[0]=data2[0].substring(0,1)
+      data2[1]=data2[1].substring(0,2)
+      data2[2]=data2[2].substring(0,2)
+      data2[3]=data2[3].substring(0,2)
+      data2[4]=data2[4].substring(0,2)
+      data2[5]=data2[5].substring(0,2)
+      if (active.node() === this) return reset();
+      active.classed("active", false);
+      active = d3.select(this).classed("active", true);
+      var bounds = path.bounds(d),
+      dx = bounds[1][0] - bounds[0][0],
+      dy = bounds[1][1] - bounds[0][1],
+      x = (bounds[0][0] + bounds[1][0]) / 2,
+      y = (bounds[0][1] + bounds[1][1]) / 2,
+      scale = .9 / Math.max(dx / width, dy / height),
+      translate = [width / 2 - scale * x, height / 2 - scale * y];
+      g.transition()
+      .duration(750)
+      .style("stroke-width", 1.5 / scale + "px")
+      .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+      store=[]
+      store2=[]
+      var idState=0
+      if(d.id<1000)
+      {
+        idState="0"+(d.id).toString()
+      }
+      else
+      {
+        idState=(d.id).toString()
+      }
+      
+      for(var j=0;j<congress["objects"]["districts"]["geometries"].length;j++){
+        if(congress["objects"]["districts"]["geometries"][j]["id"]===d.id){
+          for(var i=3;i<7;i++){
+            store.push((congress["objects"]["districts"]["geometries"][j]["properties"]["DP008000"+i.toString()]))
+          }
+        }
+      }
+      for(var j=0;j<info.length;j++){
+        if(info[j]["GEO.id"].substring(9,13)==idState)
+        {
+          for(var i=3;i<21;i++){
+            if(i<10)
+            {
+              i="0"+i.toString()
+            }
+            else
+            {
+              i=i.toString()
+            }            
+            store2.push(info[j]["HC02_EST_VC"+i])
+          }
+          for(var i=3;i<21;i++){
+            if(i<10)
+            {
+              i="0"+i.toString()
+            }
+            else
+            {
+              i=i.toString()
+            }             
+            store2.push(info[j]["HC03_EST_VC"+i])
+          }
+        }
+      }
+      for(var num=0;num<store2.length;num++){
+        store2[num]=parseFloat(store2[num])*10000
+      }
+      if(store2.length!==0){
+        var width1 = 960
+        var height1 = 400
+        var svg1 = d3.select("body").append("svg")
+        .attr("width", width1)
+        .attr("height", height1)
+        .attr("class", "background1");
+        var maxstore=(Math.max.apply(Math, store2))
+        var divide= maxstore/(height1-30)
+        var chart = d3.select(".background1")
+        .attr("width", width1)
+        .attr("height", height1);
+        var barWidth = (width-20) / (2*store2.length);
+        var bar = chart.selectAll("g")
+        .data(store2)
+        .enter().append("g")
+        .attr("transform", function(d, i) {return "translate(" + (i * barWidth+40)+",0)"; });
+        var yScale = d3.scale.linear().domain([0, maxstore])
+        .range([height1-33, 0]);
+        var y_axis = d3.svg.axis().scale(yScale).orient("left");;
+        d3.select(".background1")
+        .append("g")
+        .attr("class","y axis")
+        .attr("transform","translate("+40+",0)")
+        .call(y_axis);
+        svg1.select(".y.axis")
+        .selectAll("text")
+        .style("font-size","7px").style("letter-spacing", "0")
+        if(height1!=0){
+          bar.append("rect")
+          .attr("y", function(d) {
+            return yScale(d);
+          })
+          .attr("height", function(d) {
+            return (yScale(0) - yScale(d));
+          })
+          .attr("width", barWidth - 1)
+          .style("fill", function(d, i) {
+            if(i<18)
+              return "#add8e6";
+            else
+              return "#f28abf";
+          });}
+          bar.append("text")
+          .attr("x", 0)
+          .attr("y", height1-30)
+          .attr("dy", ".75em")
+          .text(function(d,i) {if(i<18){return i*5}else{return (i-18)*5}})
+          .attr("font-size", "7px").style("letter-spacing", "0");
+          chart.append("text")
+          .attr("x", 100)
+          .attr("y", height1)
+          .text("Male Age").attr("font-family", "sans-serif")
+          .attr("font-size", "12px");
+          chart.append("text")
+          .attr("x", 300)
+          .attr("y", height1)
+          .text("Female Age").attr("font-family", "sans-serif")
+          .attr("font-size", "12px");
+        }
+        else{
+          var width1 = 960
+          var height1 = 600
+          var svg1 = d3.select("body").append("svg")
+          .attr("width", width1)
+          .attr("height", 50)
+          .attr("class", "background1");
+          var chart = d3.select(".background1")
+          .attr("width", width1)
+          .attr("height", 50);
+          chart.append("text")
+          .attr("x", width1 / 2-200)
+          .attr("y", 0).attr("font-family", "sans-serif")
+          .attr("font-size", "20px")
+          .attr("dy", "1em")
+          .text( "No Info about Age and Race distribution");
+        }  
+        if(store.length!==0){
+          store3=["White","Black","Asian","Native American"]
+          var store4 = store3.map(function (e, i) {
+            return [store3[i], store[i]];
+          });
+          var width2 = 480,
+          height2 = 400,
+          radius = Math.min(width2, height2) / 2;
+          var color = d3.scale.ordinal()
+          .range(["#8dd3c7", "#ffffb3", "#bebada", "#fb8072"]);
+          var arc = d3.svg.arc()
+          .outerRadius(radius - 10)
+          .innerRadius(0);
+          var pie = d3.layout.pie()
+          .sort(null)
+          .value(function(store4) { return store4[1]; });
+          var svg2 = d3.select(".background1")
+          .data(pie(store4))
+          .append("svg").attr("x", width2)
+          .attr("width", width2)
+          .attr("height", height2)
+          .append("g")
+          .attr("transform", "translate(" + width2 / 2 + "," + height2 / 2 + ")");
+          var g2 =svg2.selectAll(".arc")
+          .data(pie(store4))
+          .enter().append("g")
+          .attr("class", "arc");
+          g2.append("path")
+          .attr("d", arc)
+          .style("fill", function(d) { return color(d.data); });
+          g2.append("text")
+          .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
+          .attr("x", -65)
+          .attr("y", 80)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "10px")
+          .style("text-anchor", "left")
+          .text(function(d) {return d.data[0]; });
+          g2.append("rect")
+          .attr("width", 40)
+          .attr("height", 15) 
+          .attr("x", 185)
+          .attr("y", 90)
+          .style("fill","#ffffb3" );
+          g2.append("rect")
+          .attr("width", 40)
+          .attr("height", 15) 
+          .attr("x", 185)
+          .attr("y", 110) 
+          .style("fill","#bebada" );
+          g2.append("rect")
+          .attr("width", 40)
+          .attr("height", 15) 
+          .attr("x", 185)
+          .attr("y", 130)
+          .style("fill","#fb8072" );
+          g2.append("rect")
+          .attr("width", 40)
+          .attr("height", 15) 
+          .attr("x", 185)
+          .attr("y", 70)
+          .style("fill","#8dd3c7" );
+          g2.append("text")
+          .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
+          .attr("x", 120)
+          .attr("y", 80)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "10px")
+          .style("text-anchor", "left")
+          .text(function(d) {return d.data[1]; });
+        }
+      }
+      function reset() {
+        $(".background1").wrapAll().remove();
+        active.classed("active", false);
+        active = d3.select(null);
+        g.transition()
+        .duration(750)
+        .style("stroke-width", "1.5px")
+        .attr("transform", "");
+      }
+    }
+    function testReady(error, us, info, congress, rep, meta,stateId) {
+      var svg = d3.select("body").append("svg")
+      .attr("width", width)
+      .attr("height", height);
+      svg.append("rect")
+      .attr("class", "background")
+      .attr("width", width)
+      .attr("height", height)
+      .on("click", reset);
+      var tip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .html(function(d) {
+        var repre = searchMember(d.id);
+        return "<span style='color:white' class='large'>" + 
+        repre.person.firstname + " " + repre.person.lastname + "</span><br>" 
+        + "<span style='color:white'>" + repre.party + "</span><br>"
+        + "<img src = '" + "https://theunitedstates.io/images/congress/original/"+ repre.person.bioguideid + ".jpg" + "'alt = 'No Image' id = 'circle'/>";
+      })
+      svg.call(tip);
+      var districts = congress.objects.districts.geometries;
+      for (var c = 0; c<districts.length; c++){
+        var newModifiedData = {};
+        for (var s = 0; s<stateId.length; s++){
+          var stateID = districts[c].id.toString();
+          var districtID = districts[c].id.toString();
+          stateID = stateID.substring(0, stateID.length - 2);
+          districtID = districtID.slice(-2);
+          if (stateID == stateId[s].id){
+            newModifiedData.districtId = parseInt(districtID, 10);
+            newModifiedData.stateAbbrev = stateId[s].code.toLowerCase();
+            newModifiedData.stateId = stateID;
+            newModifiedData.fullId = districts[c].id;
+            newModifiedData.stateName = stateId[s].name;
+            newModifiedData.ocdID = "ocd-division/country:us/state:" + newModifiedData.stateAbbrev + "/cd:" 
+            + newModifiedData.districtId;
+            modifiedData.push(newModifiedData);
+          }
+        }
+      }
+      function searchModified(givenID){
+        for (m = 0; m <modifiedData.length; m++){
+          if(givenID == modifiedData[m].fullId){
+            return modifiedData[m].stateAbbrev;
+          }
+        }
+      }
+      var cong = 108;
+      if(year == 1){
+        cong = 108;
+      }
+      else if(year == 2){
+        cong = 111;
+      }
+      else if(year == 3){
+        cong = 113;
+      }
+      function searchMember(givenID){
+        for (r = 0; r<rep.objects.length; r++){
+          oneRep = rep.objects[r];
+          if(oneRep.congress_numbers!=null){
+            for(y = 0; y<oneRep.congress_numbers.length; y++){
+              if(oneRep.congress_numbers[y] == cong){
+                var state = searchModified(givenID).toUpperCase();
+                var disID = parseInt(givenID.toString().slice(-2), 10);
+                if(state == oneRep.state && disID == oneRep.district){
+                  return oneRep;
+                  break;
+                }
+              }
+            }
+          }
+        }
+        return 1;
+      }
+      var g = svg.append("g")
+      .style("stroke-width", "1.5px");
+      g.selectAll("path")
+      .data(topojson.feature(congress, congress.objects.districts).features)
+      .enter().append("path")
+      .attr("d", path)
+      .attr("class", "feature")
+      .style("fill", function(d){
+        var per = searchMember(d.id);
+        if (per.party == "Republican")
+          return "#ff4c4c";
+        else if(per.party == "Democrat")
+          return "#5591e5";
+      })
+      .on("click", clicked)
+      .on("mouseover", tip.show)
+      .on("mouseout", tip.hide);
+      g.append("path")
+      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .attr("class", "mesh")
+      .attr("d", path);
+      g.append("path")
+      .attr("class", "district-boundaries")
+      .datum(topojson.mesh(congress, congress.objects.districts, function(a, b) { return a !== b && (a.id / 1000 | 0) === (b.id / 1000 | 0); }))
+      .attr("d", path).append("title")
+      .text(function(d) { return d.id; });
+      function clicked(d) {
+       $(".background1").wrapAll().remove();
+       $(".y axis").wrapAll().remove();
+       data2=[]
+       meta.forEach(function(d,i) { 
+         if(meta[i]["TBLID#ORDER#STUB"].substring(0, 4)=="P004")
+         {
+          data2.push(meta[i]["TBLID#ORDER#STUB"].substring(7,10))
+        }
+      });
+       data2.splice(0, 1);
+       data2.forEach(function(d,j) { 
+        if(data2[j].indexOf("#")==0)
+        {
+          data2[j]=data2[j].substring(1,3)
+        }
+      });
+       data2.splice(0, 3);
+       data2.splice(22, 2);
+       data2[0]=data2[0].substring(0,2)
+       data2[0]=data2[0].substring(0,1)
+       data2[1]=data2[1].substring(0,2)
+       data2[2]=data2[2].substring(0,2)
+       data2[3]=data2[3].substring(0,2)
+       data2[4]=data2[4].substring(0,2)
+       data2[5]=data2[5].substring(0,2)
+       if (active.node() === this) return reset();
+       active.classed("active", false);
+       active = d3.select(this).classed("active", true);
+       var bounds = path.bounds(d),
+       dx = bounds[1][0] - bounds[0][0],
+       dy = bounds[1][1] - bounds[0][1],
+       x = (bounds[0][0] + bounds[1][0]) / 2,
+       y = (bounds[0][1] + bounds[1][1]) / 2,
+       scale = .9 / Math.max(dx / width, dy / height),
+       translate = [width / 2 - scale * x, height / 2 - scale * y];
+       g.transition()
+       .duration(750)
+       .style("stroke-width", 1.5 / scale + "px")
+       .attr("transform", "translate(" + translate + ")scale(" + scale + ")");
+       store=[]
+       store2=[]
+       for(var j=0;j<info.length;j++){
+        if(parseInt(info[j]["GEOID"].substring(7,11), 10)==d.id)
+        {
+          if(info[j]["TBLID"]=="P002"){
+            for(var i=2;i<8;i++){
+              if(info[j]["ORDER"]==i){
+                store.push(info[j]["EST"])
+              }
+            }
+          }
+          if(info[j]["TBLID"]=="P004"){
+            for(var i=3;i<26;i++){
+              if(info[j]["ORDER"]==i){
+                store2.push(info[j]["EST"])
+              }
+            }
+            for(var i=27;i<48;i++){
+              if(info[j]["ORDER"]==i){
+                store2.push(info[j]["EST"])
+              }
+            }
+          }
+        }
+      }
+      if(store2.length!==0){
+        var width1 = 960
+        var height1 = 400
+        var svg1 = d3.select("body").append("svg")
+        .attr("width", width1)
+        .attr("height", height1)
+        .attr("class", "background1");
+        var maxstore=(Math.max.apply(Math, store2))
+        var divide= maxstore/(height1-30)
+        var chart = d3.select(".background1")
+        .attr("width", width1)
+        .attr("height", height1);
+        var barWidth = (width-40) / (2*store2.length);
+        var bar = chart.selectAll("g")
+        .data(store2)
+        .enter().append("g")
+        .attr("transform", function(d, i) {return "translate(" + (i * barWidth +40)+ ",0)"; });
+        var yScale = d3.scale.linear().domain([0, maxstore])
+        .range([height1-33, 0]);
+        var y_axis = d3.svg.axis().scale(yScale).orient("left");;
+        d3.select(".background1")
+        .append("g")
+        .attr("class","y axis")
+        .attr("transform","translate("+40+",0)")
+        .call(y_axis);
+        svg1.select(".y.axis")
+        .selectAll("text").style("letter-spacing", "0")
+        .style("font-size","7px")
+        if(height1!=0){
+          bar.append("rect")
+          .attr("y", function(d) {
+            return yScale(d);
+          })
+          .attr("height", function(d) {
+            return (yScale(0) - yScale(d));
+          })
+          .attr("width", barWidth - 1)
+          .attr("width", barWidth - 1)
+          .style("fill", function(d, i) {
+            if(i<22)
+              return "#add8e6";
+            else
+              return "#f28abf";
+          });}
+          bar.append("text")
+          .attr("x", 0)
+          .attr("y", height1-30)
+          .attr("dy", ".75em")
+          .text(function(d,i) {return data2[i].toString()})
+          .attr("font-size", "7px").style("text-anchor", "left").style("letter-spacing", "0");
+          chart.append("text")
+          .attr("x", 100)
+          .attr("y", height1)
+          .text("Male Age").attr("font-family", "sans-serif")
+          .attr("font-size", "12px");
+          chart.append("text")
+          .attr("x", 300)
+          .attr("y", height1)
+          .text("Female Age").attr("font-family", "sans-serif")
+          .attr("font-size", "12px");
+        }
+        else{
+          var width1 = 960
+          var height1 = 600
+          var svg1 = d3.select("body").append("svg")
+          .attr("width", width1)
+          .attr("height", 50)
+          .attr("class", "background1");
+          var chart = d3.select(".background1")
+          .attr("width", width1)
+          .attr("height", 50);
+          chart.append("text")
+          .attr("x", width1 / 2-200)
+          .attr("y", 0).attr("font-family", "sans-serif")
+          .attr("font-size", "20px")
+          .attr("dy", "1em")
+          .text( "No Info about Age and Race distribution");
+        }  
+        if(store.length!==0){
+          store3=["White","Black","Native American","Asian","Native Hawaiian","Other"]
+          var store4 = store3.map(function (e, i) {
+            return [store3[i], store[i]];
+          });
+          var width2 = 480,
+          height2 = 400,
+          radius = Math.min(width2, height2) / 2;
+          var color = d3.scale.ordinal()
+          .range(["#8dd3c7", "#ffffb3", "#bebada", "#fb8072", "#80b1d3", "#d0743c", "#fdb462"]);
+          var arc = d3.svg.arc()
+          .outerRadius(radius - 10)
+          .innerRadius(0);
+          var pie = d3.layout.pie()
+          .sort(null)
+          .value(function(store4) { return store4[1]; });
+          var svg2 = d3.select(".background1")
+          .data(pie(store4))
+          .append("svg").attr("x", width2)
+          .attr("width", width2)
+          .attr("height", height2)
+          .append("g")
+          .attr("transform", "translate(" + width2 / 2 + "," + height2 / 2 + ")");
+          var g2 =svg2.selectAll(".arc")
+          .data(pie(store4))
+          .enter().append("g")
+          .attr("class", "arc");
+          g2.append("path")
+          .attr("d", arc)
+          .style("fill", function(d) { return color(d.data); });
+          g2.append("text")
+          .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
+          .attr("x", -65)
+          .attr("y", 85)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "10px")
+          .style("text-anchor", "left")
+          .text(function(d) {return d.data[0]; });
+          g2.append("text")
+          .attr("transform", function(d, i) {return "translate(0,"+i*20+")"; })
+          .attr("x", 100)
+          .attr("y", 85)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "10px")
+          .style("text-anchor", "left")
+          .text(function(d) {return d.data[1]; });
+          g2.append("rect")
+          .attr("width", 40)
+          .attr("height", 15) 
+          .attr("x", 185)
+          .attr("y", 95)
+          .style("fill","#ffffb3" );
+          g2.append("rect")
+          .attr("width", 40)
+          .attr("height", 15) 
+          .attr("x", 185)
+          .attr("y", 115) 
+          .style("fill","#bebada" );
+          g2.append("rect")
+          .attr("width", 40)
+          .attr("height", 15) 
+          .attr("x", 185)
+          .attr("y", 135)
+          .style("fill","#fb8072" );
+          g2.append("rect")
+          .attr("width", 40)
+          .attr("height", 15) 
+          .attr("x", 185)
+          .attr("y", 155)
+          .style("fill","#80b1d3" );
+          g2.append("rect")
+          .attr("width", 40)
+          .attr("height", 15) 
+          .attr("x", 185)
+          .attr("y", 175)
+          .style("fill","#fdb462" );
+          g2.append("rect")
+          .attr("width", 40)
+          .attr("height", 15) 
+          .attr("x", 185)
+          .attr("y", 75)
+          .style("fill","#8dd3c7" );
+        }
+      }
+      function reset() {
+        $(".background1").wrapAll().remove();
+        $(".y axis").wrapAll().remove();
+        active.classed("active", false);
+        active = d3.select(null);
+        g.transition()
+        .duration(750)
+        .style("stroke-width", "1.5px")
+        .attr("transform", "");
+      }
+    }
+    </script>
+	</body>
